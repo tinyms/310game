@@ -1,0 +1,14 @@
+{
+  "manifest_version": 2,
+  "name": "Football",
+  "description": "Football",
+  "version": "1.0",
+  "permissions": [
+    "http://odds.500.com/"
+  ],
+  "content_scripts":[{
+		"matches":["http://odds.500.com/fenxi/*"],
+		"js":["jquery-1.9.1.min.js","500.js"]
+	}
+  ]
+}

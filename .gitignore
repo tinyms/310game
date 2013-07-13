@@ -1,5 +1,9 @@
+PySetup-build
+_cache
+cache_history_data_startdate.log
+*.user
+*.idea
 *.py[cod]
-
 # C extensions
 *.so
 
@@ -31,5 +35,9 @@ nosetests.xml
 
 # Mr Developer
 .mr.developer.cfg
-.project
-.pydevproject
+cache_web_pages
+data
+__pycache__
+
+build-WaterPress-Desktop_Qt_5_0_2_MinGW_32bit*
+WaterPress.pro.user*

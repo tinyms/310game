@@ -1,0 +1,3 @@
+$ cd ~/.ssh
+$ ssh-keygen -t rsa -C henllyee@126.com
+默认会生成id_dsa.pub文件在C:\Users\YourUserName\.ssh
