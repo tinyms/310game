@@ -47,13 +47,13 @@ class Result(object):
         #         if last4.main_defence >= 0.8:
         #             r.append("1")
 
-        if r.count("3")==0:
-            if (last4.main_force >= last4.client_force) and (last4.main_defence > last4.client_defence) :
-                r.append("3")
-
-        if r.count("0")==0:
-            if (last4.main_force <= last4.client_force) and (last4.main_defence < last4.client_defence):
-                r.append("0")
+        # if r.count("3")==0:
+        #     if (last4.main_force >= last4.client_force) and (last4.main_defence > last4.client_defence) :
+        #         r.append("3")
+        #
+        # if r.count("0")==0:
+        #     if (last4.main_force <= last4.client_force) and (last4.main_defence < last4.client_defence):
+        #         r.append("0")
 
         program_result = "".join(r)
         # if program_result.find(com_odds_result)==-1:
@@ -78,10 +78,10 @@ class Formula(object):
         return self._type
     def to_results(self):
         self.count_force(self.main_force,self.client_force)
-        self.count_defence(self.main_defence,self.client_defence)
+        #self.count_defence(self.main_defence,self.client_defence)
         return self._results
 
-    def count_force(self,main,client,fact=0.5):
+    def count_force(self,main,client,fact=0.75):
         diff = main-client
         if diff >= fact and main > 1:
             self._results.append(3)

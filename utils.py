@@ -509,7 +509,7 @@ def detect_result(match):
     scores += match["formula_last10"].to_results()
     scores += match["formula_last6"].to_results()
     scores += match["formula_last4"].to_results()
-    scores += match["formula_last_mid"].to_results()
+    #scores += match["formula_last_mid"].to_results()
     r = Result(scores,match["odds"])
     match["result"]=r.detect(match["formula_last4"])
 
