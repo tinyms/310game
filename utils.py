@@ -552,7 +552,7 @@ class MatchsTreeModel(QtCore.QAbstractItemModel):
             return data
 
         if role == QtCore.Qt.TextAlignmentRole:
-            if 1==index.column() or 8==index.column():
+            if 0==index.column() or 1==index.column() or 8==index.column():
                 return QtCore.Qt.AlignCenter
 
         if role == QtCore.Qt.BackgroundRole:

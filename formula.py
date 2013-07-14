@@ -36,7 +36,8 @@ class Result(object):
             r.append("3")
         elif total_3 < total_0:
             r.append("0")
-        elif num_1 > total_3_0:
+        if num_1 > total_3_0:
+            r.clear()
             r.append("1")
 
         # if r.count("1")==0:
