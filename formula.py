@@ -67,6 +67,7 @@ class Formula(object):
     TYPE_LAST6 = "last6"
     TYPE_LAST4 = "last4"
     TYPE_LAST_MID = "last_mid"
+
     def __init__(self, type_=TYPE_TOTAL):
         super(Formula, self).__init__()
         self._type = type_
@@ -75,8 +76,11 @@ class Formula(object):
         self.main_defence = 0.0 #防御
         self.client_force = 0.0
         self.client_defence = 0.0
+        self.avg_balls = 0.0
+
     def type_(self):
         return self._type
+
     def to_results(self):
         self.count_force(self.main_force,self.client_force)
         #self.count_defence(self.main_defence,self.client_defence)
@@ -84,6 +88,7 @@ class Formula(object):
 
     def count_force(self,main,client,fact=0.75):
         diff = main-client
+        self.avg_balls = diff
         if diff >= fact and main > 1:
             self._results.append(3)
         elif diff <= -1*fact and client > 1:

@@ -28,7 +28,7 @@ def create_history_db():
       [ID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
       [Score] NVARCHAR(5),
       [Asia] INT DEFAULT (0),
-      [Result] NVARCHAR(5),
+      [Result] REAL DEFAULT (0.00),
       [Actual_Result] INT DEFAULT (-1),
       [Top_Draw] REAL DEFAULT (0.00),
       [TeamNames] NVARCHAR(255),
@@ -76,7 +76,7 @@ def batch_save_history_matchs(ds):
             tmp = dict()
             tmp["Score"] = row["score"]
             tmp["Asia"] = row["db_asian"]
-            tmp["Result"] = row["result"]
+            tmp["Result"] = row["asia_avg_balls"]
             tmp["Actual_Result"] = row["db_actual_result"]
             tmp["TeamNames"] = " VS ".join(row["team_names"])
             tmp["Last10TextStyle"] = row["last_10_text_style"]
@@ -467,7 +467,7 @@ class MatchsTreeItem(object):
     def data(self, column):
         try:
             if column == 0:
-                return self.itemData["result"]
+                return self.itemData["asia_avg_balls"]
             elif column == 1:
                 return self.itemData["actual_result"]
             elif column == 2:
@@ -509,6 +509,8 @@ def detect_result(match):
     scores += match["formula_last10"].to_results()
     scores += match["formula_last6"].to_results()
     scores += match["formula_last4"].to_results()
+    avg_balls = (match["formula_last10"].avg_balls + match["formula_last6"].avg_balls + match["formula_last4"].avg_balls)/3
+    match["asia_avg_balls"] = "%.1f" % round(avg_balls,1)
     #scores += match["formula_last_mid"].to_results()
     r = Result(scores,match["odds"])
     match["result"]=r.detect(match["formula_last4"])
@@ -518,7 +520,7 @@ class MatchsTreeModel(QtCore.QAbstractItemModel):
     def __init__(self, data, parent=None):
         super(MatchsTreeModel, self).__init__(parent)
         titles = dict()
-        titles["result"]="实力"
+        titles["asia_avg_balls"]="实力"
         titles["odds_asian"] = "欧亚"
         titles["asian_rq_text_style"] = "(让球)亚盘(比分)"
         titles["actual_result"]="赛果"
