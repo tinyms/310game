@@ -27,6 +27,7 @@ def create_history_db():
     CREATE TABLE IF NOT EXISTS [Match] (
       [ID] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
       [Score] NVARCHAR(5),
+      [Detect_Result] NVARCHAR(3),
       [Asia] INT DEFAULT (0),
       [Result] REAL DEFAULT (0.00),
       [Actual_Result] INT DEFAULT (-1),
@@ -75,6 +76,7 @@ def batch_save_history_matchs(ds):
             #_batch_save_history_matchs_for_score(row)
             tmp = dict()
             tmp["Score"] = row["score"]
+            tmp["Detect_Result"] = row["result"]
             tmp["Asia"] = row["db_asian"]
             tmp["Result"] = row["asia_avg_balls"]
             tmp["Actual_Result"] = row["db_actual_result"]
@@ -109,10 +111,10 @@ def batch_save_history_matchs(ds):
         cnn = connect_db()
         cur = cnn.cursor()
         sql = """
-            INSERT INTO Match(Score,Asia,Result,Actual_Result,Top_Draw,TeamNames,Last10TextStyle,Last6TextStyle,Last4TextStyle,Last4BattleHistoryDesc,
+            INSERT INTO Match(Score,Detect_Result,Asia,Result,Actual_Result,Top_Draw,TeamNames,Last10TextStyle,Last6TextStyle,Last4TextStyle,Last4BattleHistoryDesc,
             Odds_WL,Odds_AM,Odds_LB,Odds_365,Odds_YSB,
             Odds_WL_Change,Odds_AM_Change,Odds_LB_Change,Odds_365_Change,Odds_YSB_Change,EventName)
-            VALUES(:Score,:Asia,:Result,:Actual_Result,:Top_Draw,:TeamNames,:Last10TextStyle,:Last6TextStyle,:Last4TextStyle,:Last4BattleHistoryDesc,
+            VALUES(:Score,:Detect_Result,:Asia,:Result,:Actual_Result,:Top_Draw,:TeamNames,:Last10TextStyle,:Last6TextStyle,:Last4TextStyle,:Last4BattleHistoryDesc,
             :Odds_WL,:Odds_AM,:Odds_LB,:Odds_365,:Odds_YSB,:Odds_WL_Change,:Odds_AM_Change,:Odds_LB_Change,:Odds_365_Change,:Odds_YSB_Change,:EventName)
         """
         cur.executemany(sql,rows)
@@ -469,26 +471,20 @@ class MatchsTreeItem(object):
             if column == 0:
                 return self.itemData["asia_avg_balls"]
             elif column == 1:
-                return self.itemData["actual_result"]
+                return self.itemData["result"]
             elif column == 2:
-                return self.itemData["odds_asian"]
+                return self.itemData["actual_result"]
             elif column == 3:
-                return self.itemData["odds"]
+                return self.itemData["odds_asian"]
             elif column == 4:
-                return self.itemData["asian_rq_text_style"]
+                return self.itemData["odds"]
             elif column == 5:
                 return self.itemData['team_names']
             elif column == 6:
-                return self.itemData["last_10_text_style"]
+                return self.itemData['score']
             elif column == 7:
-                return self.itemData["last_6_text_style"]
-            elif column == 8:
-                return self.itemData["last_4_text_style"]
-            elif column == 9:
-                return self.itemData["last_4_status_text_style"]
-            elif column == 10:
                 return self.itemData["season_name"]
-            elif column == 11:
+            elif column == 8:
                 return self.itemData["match_date"]
             return ""
         except IndexError:
@@ -510,25 +506,36 @@ def detect_result(match):
     scores += match["formula_last6"].to_results()
     scores += match["formula_last4"].to_results()
     avg_balls = (match["formula_last10"].avg_balls + match["formula_last6"].avg_balls + match["formula_last4"].avg_balls)/3
-    match["asia_avg_balls"] = "%.1f" % round(avg_balls,1)
+    num = round(avg_balls,2)
+    match["asia_avg_balls"] = "%.2f" % num
     #scores += match["formula_last_mid"].to_results()
-    r = Result(scores,match["odds"])
-    match["result"]=r.detect(match["formula_last4"])
+    #r = Result(scores,match["odds"])
+    #match["result"]=r.detect(match["formula_last4"])
+    diff = abs(num)
+    if diff>=0 and diff<=0.25:
+        match["result"]= "1"
+    elif diff>0.25 and diff < 0.75:
+        if num > 0:
+            match["result"]= "31"
+        else:
+            match["result"]= "10"
+    elif diff >= 0.75:
+        if num > 0:
+            match["result"]= "3"
+        else:
+            match["result"]= "0"
 
 class MatchsTreeModel(QtCore.QAbstractItemModel):
     HIDE_SCORE = False
     def __init__(self, data, parent=None):
         super(MatchsTreeModel, self).__init__(parent)
         titles = dict()
-        titles["asia_avg_balls"]="实力"
+        titles["asia_avg_balls"]="实力差"
         titles["odds_asian"] = "欧亚"
-        titles["asian_rq_text_style"] = "(让球)亚盘(比分)"
+        titles["result"] = "预测"
         titles["actual_result"]="赛果"
         titles["team_names"]="对阵球队"
-        titles["last_6_text_style"]="近6场(主客)"
-        titles["last_10_text_style"]="近10场(主客)"
-        titles["last_4_text_style"]="近4场(状态)"
-        titles["last_4_status_text_style"] = "近6场(热度)"
+        titles["score"]="比分"
         titles["odds"]="初盘(威廉)"
         titles["season_name"]="赛事"
         titles["match_date"]="比赛日期"
@@ -554,13 +561,13 @@ class MatchsTreeModel(QtCore.QAbstractItemModel):
             return data
 
         if role == QtCore.Qt.TextAlignmentRole:
-            if 0==index.column() or 1==index.column() or 8==index.column():
+            if 0==index.column() or 1==index.column() or 2==index.column():
                 return QtCore.Qt.AlignCenter
 
         if role == QtCore.Qt.BackgroundRole:
             item = index.internalPointer()
             data = item.data(index.column())
-            if index.column() == 3:
+            if index.column() == 4:
                 if data:
                     arr = [float(s) for s in data.split(" ")]
                     draw = arr[1]
@@ -568,20 +575,15 @@ class MatchsTreeModel(QtCore.QAbstractItemModel):
                     dot_part = draw - int_part
                     if round(dot_part,1) >= 0.4:
                         tip_index = index.column()
-                        return QtGui.QColor("#FF6666")
+                        return QtGui.QColor("#FFFFCC")
                 pass
 
             if 4 == index.column():
-                return QtGui.QColor("#99CCCC")
-            elif 6 == index.column():
-                return QtGui.QColor("#FFFFCC")
-            elif 7 == index.column():
-                return QtGui.QColor("#99CC99")
-            elif 8 == index.column():
-                return QtGui.QColor("#99CCCC")
-
-            elif 2 == index.column():
                 return QtGui.QColor("#FFCC99")
+            elif 0 == index.column():
+                return QtGui.QColor("#FFFFCC")
+            elif 1 == index.column():
+                return QtGui.QColor("#99CC99")
 
         return None
 

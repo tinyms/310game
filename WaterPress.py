@@ -40,7 +40,7 @@ class Workbench(QtWidgets.QWidget):
     def __init__(self):
         super(Workbench,self).__init__()
 
-        self.resize(960,720)
+        self.resize(800,600)
         self.setWindowIcon(QtGui.QIcon(':/images/football.png'))
         self.setWindowTitle("WaterPress 4.2 - http://t.qq.com/tinyms")
         self.current_matchgrid_selected_rowindex = -1
@@ -97,8 +97,6 @@ class Workbench(QtWidgets.QWidget):
         self.matchs_grid.header().setSectionResizeMode(6,QtWidgets.QHeaderView.ResizeToContents)
         self.matchs_grid.header().setSectionResizeMode(7,QtWidgets.QHeaderView.ResizeToContents)
         self.matchs_grid.header().setSectionResizeMode(8,QtWidgets.QHeaderView.ResizeToContents)
-        self.matchs_grid.header().setSectionResizeMode(9,QtWidgets.QHeaderView.ResizeToContents)
-        self.matchs_grid.header().setSectionResizeMode(10,QtWidgets.QHeaderView.ResizeToContents)
         
         #Message Bar
         self.msg_bar = QtWidgets.QLabel("就绪.")
@@ -107,7 +105,7 @@ class Workbench(QtWidgets.QWidget):
         self.web_browser_for_odds_change = QtWebKitWidgets.QWebView()
         self.web_browser_for_base_face = QtWebKitWidgets.QWebView()
         self.tab_panel = QtWidgets.QTabWidget()
-        self.tab_panel.setFixedHeight(320)
+        self.tab_panel.setFixedHeight(230)
         self.tab_panel.addTab(self.first_odds_web_browser,"初赔")
         self.tab_panel.addTab(self.web_browser_for_odds_change,"变赔")
         self.tab_panel.addTab(self.web_browser_for_base_face,"基本面")
