@@ -1,3 +1,5 @@
+*.7z
+*.exe
 PySetup-build
 _cache
 cache_history_data_startdate.log
