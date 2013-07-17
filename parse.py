@@ -506,7 +506,7 @@ class DownloadHistoryMatch(HtmlParseThread):
         send_msg("completed")
         send_msg("完成.")
         
-    def last_days(self, limit=1000):
+    def last_days(self):
         url = "http://trade.500.com/bjdc/"
         net_soup = web_page_download(url,False)
         urls = set()
@@ -520,16 +520,6 @@ class DownloadHistoryMatch(HtmlParseThread):
                 urls.add("http://trade.500.com/bjdc/?expect=%s" % opt_text)
                 pass
             pass
-        #days = []
-        # now = datetime.now()
-        # for i in range(limit):
-        #     n = (i + 1) * -1
-        #     yesterday = now + timedelta(days=n)
-        #     format_ = yesterday.strftime("%Y-%m-%d")
-        #     days.append(format_)
-        # if DownloadHistoryMatch.START_DATE!="":
-        #     start_n = days.index(DownloadHistoryMatch.START_DATE)
-        #     return days[start_n:]
         return urls
     
     def backup_data(self):

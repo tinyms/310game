@@ -125,6 +125,44 @@ def batch_save_history_matchs(ds):
         info=sys.exc_info()
         print(info[0],":",info[1])
 
+#初赔差异
+def diff_wl_lb_first_odds(wl,lb):
+    rt = {"flag":"","diff":""}
+    if not wl or not lb:
+        return rt
+    wl_nums = [round(float(i),2) for i in wl.split(" ")]
+    lb_nums = [round(float(i),2) for i in lb.split(" ")]
+    #N,H,L => NoChange,High,Low
+    if lb_nums[0]-wl_nums[0] > 0 :
+        rt["flag"] = "H"
+    elif lb_nums[0]-wl_nums[0] < 0 :
+        rt["flag"] = "L"
+    elif lb_nums[0]-wl_nums[0] == 0 :
+        rt["flag"] = "N"
+
+    if lb_nums[1]-wl_nums[1] > 0 :
+        rt["flag"] += "H"
+    elif lb_nums[1]-wl_nums[1] < 0 :
+        rt["flag"] += "L"
+    elif lb_nums[1]-wl_nums[1] == 0 :
+        rt["flag"] += "N"
+
+    if lb_nums[2]-wl_nums[2] > 0 :
+        rt["flag"] += "H"
+    elif lb_nums[2]-wl_nums[2] < 0 :
+        rt["flag"] += "L"
+    elif lb_nums[2]-wl_nums[2] == 0 :
+        rt["flag"] += "N"
+
+    items = list()
+    items.append(lb_nums[0]-wl_nums[0])
+    items.append(lb_nums[1]-wl_nums[1])
+    items.append(lb_nums[2]-wl_nums[2])
+
+    rt["diff"] = json.dumps(items)
+
+    return rt
+
 def list_history_matchs(model,event_name):
     cnn = connect_db()
     cnn.row_factory = sqlite3.Row
