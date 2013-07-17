@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Odds Query Builder</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic">
+    <link rel="stylesheet" href="yui3/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="vendor/prettify/prettify-min.css">
+    <script src="yui3/yui/yui-min.js"></script>
+    
+</head>
+<body>
+<div id="doc">
+    <div id="hd">
+        <h1><img src="http://yuilibrary.com/img/yui-logo.png"></h1>
+    </div>
+    <div class="yui3-g">
+        <div class="yui3-u-3-4">
+            <div id="main">
+                <div class="content"><style scoped>
+/* css to counter global site css */
+.example table {
+    width: auto;
+}
+.example caption {
+    display: table-caption;
+}
+.example th,
+.example td {
+    border: 0 none;
+    text-transform :none;
+}
+</style>
+<div class="example yui3-skin-sam">
+    <div id="pizza"></div>
+
+<script>
+YUI().use("datatable", "datasource-get", "datasource-jsonschema", "datatable-datasource", function (Y) {
+
+    var url = "http://query.yahooapis.com/v1/public/yql?format=json" +
+                  "&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys",
+        query = "&q=" + encodeURIComponent(
+                'select * from local.search ' +
+                'where zip = "94089" and query = "pizza"'),
+        dataSource,
+        table;
+
+    dataSource = new Y.DataSource.Get({ source: url });
+
+    dataSource.plug(Y.Plugin.DataSourceJSONSchema, {
+        schema: {
+            resultListLocator: "query.results.Result",
+            resultFields: [
+                "Title",
+                "Phone",
+                {
+                    key: "Rating",
+                    locator: "Rating.AverageRating",
+                    parser: function (val) {
+                        // YQL is returning "NaN" for unrated restaurants
+                        return isNaN(val) ? -1 : +val;
+                    }
+                }
+            ]
+        }
+    });
+
+    table = new Y.DataTable({
+        columns: [
+            "Title",
+            "Phone",
+            {
+                key: "Rating",
+                formatter: function (o) {
+                    if (o.value === -1) {
+                        o.value = '(none)';
+                    }
+                }
+            }
+        ]
+    });
+    
+    table.plug(Y.Plugin.DataTableDataSource, { datasource: dataSource });
+
+    table.render("#pizza");
+
+    table.datasource.load({ request: query });
+});
+</script>
+
+</div>
+
+</div>
+            </div>
+        </div>
+
+        <div class="yui3-u-1-4">
+            <div class="sidebar">
+                
+
+                
+                    <div class="sidebox">
+                        <div class="hd">
+                            <h2 class="no-toc">Examples</h2>
+                        </div>
+
+                        <div class="bd">
+                            <ul class="examples">
+                                
+                                    
+                                        <li data-description="This example illustrates simple DataTable use cases.">
+                                            <a href="datatable-basic.html">Basic DataTable</a>
+                                        </li>
+                                    
+                                
+                                    
+                                        <li data-description="DataTable loaded with JSON data from a remote webservice via DataSource.Get">
+                                            <a href="datatable-dsget.html">DataTable + DataSource.Get + JSON Data</a>
+                                        </li>
+                                    
+                                
+                                    
+                                        <li data-description="DataTable loaded with XML data from a remote webservice via DataSource.IO.">
+                                            <a href="datatable-dsio.html">DataTable + DataSource.IO + XML Data</a>
+                                        </li>
+                                    
+                                
+                                    
+                                        <li data-description="Custom format data for display.">
+                                            <a href="datatable-formatting.html">Formatting Row Data for Display</a>
+                                        </li>
+                                    
+                                
+                                    
+                                        <li data-description="DataTable with nested column headers.">
+                                            <a href="datatable-nestedcols.html">Nested Column Headers</a>
+                                        </li>
+                                    
+                                
+                                    
+                                        <li data-description="DataTable with column sorting.">
+                                            <a href="datatable-sort.html">Column Sorting</a>
+                                        </li>
+                                    
+                                
+                                    
+                                        <li data-description="DataTable with vertical and/or horizontal scrolling rows.">
+                                            <a href="datatable-scroll.html">Scrolling DataTable</a>
+                                        </li>
+                                    
+                                
+                                    
+                                        <li data-description="Using DataTable&#x27;s recordType attribute to create calculated, sortable columns.">
+                                            <a href="datatable-recordtype.html">Sortable generated columns</a>
+                                        </li>
+                                    
+                                
+                                    
+                                        <li data-description="Populating one DataTable from details in the data of another.">
+                                            <a href="datatable-masterdetail.html">Master and detail tables</a>
+                                        </li>
+                                    
+                                
+                                    
+                                        <li data-description="Checkbox column that retains checked state when sorting.">
+                                            <a href="datatable-chkboxselect.html">Checkbox select column</a>
+                                        </li>
+                                    
+                                
+                                    
+                                
+                            </ul>
+                        </div>
+                    </div>
+                
+
+                
+                    <div class="sidebox">
+                        <div class="hd">
+                            <h2 class="no-toc">Examples That Use This Component</h2>
+                        </div>
+
+                        <div class="bd">
+                            <ul class="examples">
+                                    
+                                        <li data-description="Shows how to instantiate multiple Panel instances, and use nested modality to interact with a Datatable.">
+                                            <a href="../panel/panel-form.html">Creating a Modal Form</a>
+                                        </li>
+                                    
+                                
+                            </ul>
+                        </div>
+                    </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+</body>
+</html>
