@@ -507,19 +507,29 @@ class DownloadHistoryMatch(HtmlParseThread):
         send_msg("完成.")
         
     def last_days(self):
-        url = "http://trade.500.com/bjdc/"
-        net_soup = web_page_download(url,False)
+        #url = "http://trade.500.com/bjdc/"
+        #net_soup = web_page_download(url,False)
         urls = set()
-        if net_soup:
-            html_select_tag = net_soup.find("select",id="expect_select")
-            option_tags = html_select_tag.find_all("option")
-            for opt in option_tags:
-                opt_text = trim_all(opt.get_text())
-                if opt_text and opt_text.find("当前期")!=-1:
+        # if net_soup:
+        #     html_select_tag = net_soup.find("select",id="expect_select")
+        #     option_tags = html_select_tag.find_all("option")
+        #     for opt in option_tags:
+        #         opt_text = trim_all(opt.get_text())
+        #         if opt_text and opt_text.find("当前期")!=-1:
+        #             continue
+        #         urls.add("http://trade.500.com/bjdc/?expect=%s" % opt_text)
+        #         pass
+        #     pass
+        for year in [13,12,11,10]:
+            for month in range(11):
+                if year == 13 and month+1 > 7:
                     continue
-                urls.add("http://trade.500.com/bjdc/?expect=%s" % opt_text)
-                pass
-            pass
+                for expect in range(34):
+                    if year == 13 and expect+1 > 6:
+                        continue
+                    no = "%i%s%s" % (year,"{:0>2d}".format(month+1),"{:0>2d}".format(expect+1))
+                    urls.add("http://trade.500.com/bjdc/?expect=%s" % no)
+                    pass
         return urls
     
     def backup_data(self):
@@ -527,5 +537,5 @@ class DownloadHistoryMatch(HtmlParseThread):
             os.rename("_cache", "_cache." + datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
         pass
 # t = DownloadHistoryMatch()
-# #print t.last_7_weeks()
+# print(t.last_days())
 # t.backup_data()
