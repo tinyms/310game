@@ -1,9 +1,10 @@
 __author__ = 'tinyms'
 
-import psycopg2 as pg
+import psycopg2
+import psycopg2.extras
 
 def pg_open():
-    return pg.connect(database="postgres",user="postgres",password="1")
+    return psycopg2.connect(database="postgres",user="postgres",password="1")
 
 def to_floats(odds_text):
     if not odds_text:
@@ -54,7 +55,7 @@ def wl_lb_match_history_cache(matchs):
         """
 
     cnn = pg_open()
-    cur = cnn.cursor()#cursor_factory=pg.extras.DictCursor
+    cur = cnn.cursor()
     try:
         cur.executemany(sql,rows)
         cnn.commit()
@@ -62,6 +63,56 @@ def wl_lb_match_history_cache(matchs):
     finally:
         cnn.close()
 
+def query_history_matchs(d_result,flag):
+    sql = "SELECT * FROM matchs WHERE detect_result = %s AND wl_lb_flag = %s ORDER BY random() LIMIT 50";
+    matchs = list()
+    try:
+        cnn = pg_open()
+        cur = cnn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cur.execute(sql,(d_result,flag))
+        rows = cur.fetchall()
+        for row in rows:
+            match = dict()
+            match["id"] = row["id"]
+            match["score"] = row["score"]
+            match["actual_result"] = row["actual_result"]
+            match["detect_result"] = row["detect_result"]
+            match["balls_diff"] = round(float(row["balls_diff"]),2)
+            match["vs_team_names"] = row["vs_team_names"]
+            match["last_10"] = row["last_10"]
+            match["last_6"] = row["last_6"]
+            match["last_4"] = row["last_4"]
+            match["last_battle"] = row["last_battle"]
+            match["odds_wl"] = decimals_to_floats(row["odds_wl"])
+            match["odds_lb"] = decimals_to_floats(row["odds_lb"])
+            match["odds_am"] = decimals_to_floats(row["odds_am"])
+            match["odds_beta"] = decimals_to_floats(row["odds_beta"])
+            match["odds_ysb"] = decimals_to_floats(row["odds_ysb"])
+            match["odds_wl_c"] = decimals_to_floats(row["odds_wl_c"])
+            match["odds_lb_c"] = decimals_to_floats(row["odds_lb_c"])
+            match["odds_am_c"] = decimals_to_floats(row["odds_am_c"])
+            match["odds_beta_c"] = decimals_to_floats(row["odds_beta_c"])
+            match["odds_ysb_c"] = decimals_to_floats(row["odds_ysb_c"])
+            match["wl_lb_flag"] = row["wl_lb_flag"]
+            match["wl_lb_diff"] = decimals_to_floats(row["wl_lb_diff"])
+            match["evt_name"] = row["evt_name"]
+            match["url_key"] = row["url_key"]
+            match["vs_date"] = row["vs_date"]
+            #match["first_odds_wl"] = format_first_odds(row["odds_wl"])
+            matchs.append(match)
+    finally:
+        cnn.close()
+
+    return matchs
+
+def format_first_odds(wl_odds):
+    draw_ext = round(wl_odds[1] - int(wl_odds[1]),2)
+    if draw_ext >= 0.5:
+        return "%.2f <span color='red'>%.2f</span> %.2f" % (wl_odds[0],wl_odds[1],wl_odds[2])
+    return "%.2f %.2f %.2f" % (wl_odds[0],wl_odds[1],wl_odds[2])
+
+def decimals_to_floats(arr):
+    return [round(float(d),2) for d in arr]
 
 def diff_wl_lb_first_odds(wl, lb):
     rt = {"flag": "", "diff": ""}

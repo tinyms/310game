@@ -5,10 +5,29 @@
     <title>Odds Query Builder</title>
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic">
     <link rel="stylesheet" href="yui3/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="yui3/cssbutton/cssbutton-min.css">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="vendor/prettify/prettify-min.css">
     <script src="yui3/yui/yui-min.js"></script>
-    
+    <style type="text/css">
+        html {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+
+        body, table, input, textarea, select, button {
+            font-family: "微软雅黑", Verdana, sans-serif, "宋体";
+        }
+
+        .yui3-skin-sam .yui3-datatable tr.myhilite td {
+            background-color: #C0ffc0;
+        }
+
+        #datatable_matchs tbody tr {
+            /*  Turn on cursor to show TR's are selectable on Master DataTable only  */
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 <div id="doc">
@@ -18,186 +37,256 @@
     <div class="yui3-g">
         <div class="yui3-u-3-4">
             <div id="main">
-                <div class="content"><style scoped>
-/* css to counter global site css */
-.example table {
-    width: auto;
-}
-.example caption {
-    display: table-caption;
-}
-.example th,
-.example td {
-    border: 0 none;
-    text-transform :none;
-}
-</style>
-<div class="example yui3-skin-sam">
-    <div id="pizza"></div>
+                <div class="content">
+                    <style scoped>
+                            /* css to counter global site css */
+                        .example table {
+                            width: auto;
+                        }
 
-<script>
-YUI().use("datatable", "datasource-get", "datasource-jsonschema", "datatable-datasource", function (Y) {
+                        .example caption {
+                            display: table-caption;
+                        }
 
-    var url = "http://query.yahooapis.com/v1/public/yql?format=json" +
-                  "&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys",
-        query = "&q=" + encodeURIComponent(
-                'select * from local.search ' +
-                'where zip = "94089" and query = "pizza"'),
-        dataSource,
-        table;
+                        .example th,
+                        .example td {
+                            border: 0 none;
+                            text-transform: none;
+                        }
+                    </style>
+                    <div class="example yui3-skin-sam">
+                        <div>
+                            实力: <select id="Detect_Result">
+                            <option value="3">3</option>
+                            <option value="1">1</option>
+                            <option value="0">0</option>
+                            <option value="31">31</option>
+                            <option value="10">10</option>
+                        </select>
+                            胜: <select id="diff_win">
+                            <option value="N">不变</option>
+                            <option value="H">高</option>
+                            <option value="L">低</option>
+                        </select>
+                            平: <select id="diff_draw">
+                            <option value="N">不变</option>
+                            <option value="H">高</option>
+                            <option value="L">低</option>
+                        </select>
+                            负: <select id="diff_lost">
+                            <option value="N">不变</option>
+                            <option value="H">高</option>
+                            <option value="L">低</option>
+                        </select>
+                            <input id="btn_QueryHistoryMatchs" class='yui3-button' type="button" value="搜索"
+                                   style="margin-left: 10px;"/>
+                        </div>
 
-    dataSource = new Y.DataSource.Get({ source: url });
+                        <div id="datatable_matchs" style="margin-top: 10px;"></div>
 
-    dataSource.plug(Y.Plugin.DataSourceJSONSchema, {
-        schema: {
-            resultListLocator: "query.results.Result",
-            resultFields: [
-                "Title",
-                "Phone",
-                {
-                    key: "Rating",
-                    locator: "Rating.AverageRating",
-                    parser: function (val) {
-                        // YQL is returning "NaN" for unrated restaurants
-                        return isNaN(val) ? -1 : +val;
-                    }
-                }
-            ]
-        }
-    });
+                    </div>
 
-    table = new Y.DataTable({
-        columns: [
-            "Title",
-            "Phone",
-            {
-                key: "Rating",
-                formatter: function (o) {
-                    if (o.value === -1) {
-                        o.value = '(none)';
-                    }
-                }
-            }
-        ]
-    });
-    
-    table.plug(Y.Plugin.DataTableDataSource, { datasource: dataSource });
-
-    table.render("#pizza");
-
-    table.datasource.load({ request: query });
-});
-</script>
-
-</div>
-
-</div>
+                </div>
             </div>
         </div>
 
         <div class="yui3-u-1-4">
             <div class="sidebar">
-                
 
-                
-                    <div class="sidebox">
-                        <div class="hd">
-                            <h2 class="no-toc">Examples</h2>
-                        </div>
 
-                        <div class="bd">
-                            <ul class="examples">
-                                
-                                    
-                                        <li data-description="This example illustrates simple DataTable use cases.">
-                                            <a href="datatable-basic.html">Basic DataTable</a>
-                                        </li>
-                                    
-                                
-                                    
-                                        <li data-description="DataTable loaded with JSON data from a remote webservice via DataSource.Get">
-                                            <a href="datatable-dsget.html">DataTable + DataSource.Get + JSON Data</a>
-                                        </li>
-                                    
-                                
-                                    
-                                        <li data-description="DataTable loaded with XML data from a remote webservice via DataSource.IO.">
-                                            <a href="datatable-dsio.html">DataTable + DataSource.IO + XML Data</a>
-                                        </li>
-                                    
-                                
-                                    
-                                        <li data-description="Custom format data for display.">
-                                            <a href="datatable-formatting.html">Formatting Row Data for Display</a>
-                                        </li>
-                                    
-                                
-                                    
-                                        <li data-description="DataTable with nested column headers.">
-                                            <a href="datatable-nestedcols.html">Nested Column Headers</a>
-                                        </li>
-                                    
-                                
-                                    
-                                        <li data-description="DataTable with column sorting.">
-                                            <a href="datatable-sort.html">Column Sorting</a>
-                                        </li>
-                                    
-                                
-                                    
-                                        <li data-description="DataTable with vertical and/or horizontal scrolling rows.">
-                                            <a href="datatable-scroll.html">Scrolling DataTable</a>
-                                        </li>
-                                    
-                                
-                                    
-                                        <li data-description="Using DataTable&#x27;s recordType attribute to create calculated, sortable columns.">
-                                            <a href="datatable-recordtype.html">Sortable generated columns</a>
-                                        </li>
-                                    
-                                
-                                    
-                                        <li data-description="Populating one DataTable from details in the data of another.">
-                                            <a href="datatable-masterdetail.html">Master and detail tables</a>
-                                        </li>
-                                    
-                                
-                                    
-                                        <li data-description="Checkbox column that retains checked state when sorting.">
-                                            <a href="datatable-chkboxselect.html">Checkbox select column</a>
-                                        </li>
-                                    
-                                
-                                    
-                                
-                            </ul>
-                        </div>
+                <div class="sidebox">
+                    <div class="hd">
+                        <h2 class="no-toc">Examples</h2>
                     </div>
-                
 
-                
-                    <div class="sidebox">
-                        <div class="hd">
-                            <h2 class="no-toc">Examples That Use This Component</h2>
-                        </div>
+                    <div class="bd">
+                        <ul class="examples">
 
-                        <div class="bd">
-                            <ul class="examples">
-                                    
-                                        <li data-description="Shows how to instantiate multiple Panel instances, and use nested modality to interact with a Datatable.">
-                                            <a href="../panel/panel-form.html">Creating a Modal Form</a>
-                                        </li>
-                                    
-                                
-                            </ul>
-                        </div>
+
+                            <li data-description="This example illustrates simple DataTable use cases.">
+                                <a href="datatable-basic.html">Basic DataTable</a>
+                            </li>
+
+
+                            <li data-description="DataTable loaded with JSON data from a remote webservice via DataSource.Get">
+                                <a href="datatable-dsget.html">DataTable + DataSource.Get + JSON Data</a>
+                            </li>
+
+
+                            <li data-description="DataTable loaded with XML data from a remote webservice via DataSource.IO.">
+                                <a href="datatable-dsio.html">DataTable + DataSource.IO + XML Data</a>
+                            </li>
+
+
+                            <li data-description="Custom format data for display.">
+                                <a href="datatable-formatting.html">Formatting Row Data for Display</a>
+                            </li>
+
+
+                            <li data-description="DataTable with nested column headers.">
+                                <a href="datatable-nestedcols.html">Nested Column Headers</a>
+                            </li>
+
+
+                            <li data-description="DataTable with column sorting.">
+                                <a href="datatable-sort.html">Column Sorting</a>
+                            </li>
+
+
+                            <li data-description="DataTable with vertical and/or horizontal scrolling rows.">
+                                <a href="datatable-scroll.html">Scrolling DataTable</a>
+                            </li>
+
+
+                            <li data-description="Using DataTable&#x27;s recordType attribute to create calculated, sortable columns.">
+                                <a href="datatable-recordtype.html">Sortable generated columns</a>
+                            </li>
+
+
+                            <li data-description="Populating one DataTable from details in the data of another.">
+                                <a href="datatable-masterdetail.html">Master and detail tables</a>
+                            </li>
+
+
+                            <li data-description="Checkbox column that retains checked state when sorting.">
+                                <a href="datatable-chkboxselect.html">Checkbox select column</a>
+                            </li>
+
+
+                        </ul>
                     </div>
-                
+                </div>
+
+
+                <div class="sidebox">
+                    <div class="hd">
+                        <h2 class="no-toc">Examples That Use This Component</h2>
+                    </div>
+
+                    <div class="bd">
+                        <ul class="examples">
+
+                            <li data-description="Shows how to instantiate multiple Panel instances, and use nested modality to interact with a Datatable.">
+                                <a href="../panel/panel-form.html">Creating a Modal Form</a>
+                            </li>
+
+
+                        </ul>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    YUI().use("node", "datatable", "datasource-get", "datatype-number",
+            "datasource-jsonschema", "datatable-datasource", function (Y) {
+                function format_float(num) {
+                    return Y.Number.format(num, {decimalPlaces: 2})
+                }
 
+                var url = "/match/history", dataSource, grid;
+                dataSource = new Y.DataSource.Get({ source: url });
+                dataSource.plug(Y.Plugin.DataSourceJSONSchema, {
+                    schema: {
+                        resultListLocator: "matchs",
+                        resultFields: [
+                            { key: 'id'},
+                            { key: 'score'},
+                            { key: 'actual_result'},
+                            { key: 'detect_result'},
+                            { key: 'balls_diff'},
+                            { key: 'vs_team_names'},
+                            { key: 'last_10'},
+                            { key: 'last_6'},
+                            { key: 'last_4'},
+                            { key: 'last_battle'},
+                            { key: 'odds_wl'},
+                            { key: 'odds_lb'},
+                            { key: 'odds_am'},
+                            { key: 'odds_beta'},
+                            { key: 'odds_ysb'},
+                            { key: 'odds_wl_c'},
+                            { key: 'odds_lb_c'},
+                            { key: 'odds_am_c'},
+                            { key: 'odds_beta_c'},
+                            { key: 'odds_ysb_c'},
+                            { key: 'wl_lb_flag'},
+                            { key: 'wl_lb_diff'},
+                            { key: 'evt_name'},
+                            { key: 'url_key'},
+                            { key: 'vs_date'},
+                            //Extra Fields
+                            { key: 'first_odds_wl'}
+                        ]
+                    }
+                });
+
+                grid = new Y.DataTable({
+                    columns: [
+                        {label: "球差", key: "balls_diff"},
+                        {label: "预测", key: "detect_result"},
+                        {label: "赛果", key: "actual_result"},
+                        {label: "初盘(威廉)", key: "odds_wl", formatter: function (col) {
+                            var odds = col.value;
+                            var draw = parseInt(odds[1])
+                            var dot_part = odds[1] - draw
+                            if (dot_part >= 0.5) {
+                                return format_float(odds[0]) + " <span style='color: red;'>" + format_float(odds[1]) + "</span> " + format_float(odds[2]);
+                            }
+                            return format_float(odds[0]) + " " + format_float(odds[1]) + " " + format_float(odds[2]);
+                        }, allowHTML: true},
+                        {label: "初盘(立博)", key: "odds_lb", formatter: function (col) {
+                            var odds = col.value;
+                            var draw = parseInt(odds[1])
+                            var dot_part = odds[1] - draw
+                            if (dot_part >= 0.5) {
+                                return format_float(odds[0]) + " <span style='color: red;'>" + format_float(odds[1]) + "</span> " + format_float(odds[2]);
+                            }
+                            return format_float(odds[0]) + " " + format_float(odds[1]) + " " + format_float(odds[2]);
+                        }, allowHTML: true},
+                        {label: "差异幅度", key: "wl_lb_diff", formatter: function (col) {
+                            var odds = col.value;
+                            return format_float(odds[0]) + " " + format_float(odds[1]) + " " + format_float(odds[2]);
+                        }, allowHTML: true},
+                        {label: "对阵球队", key: "vs_team_names"},
+                        {label: "比分", key: "score"},
+                        {label: "赛事", key: "evt_name"},
+                        {label: "比赛日期", key: "vs_date"}
+                    ]
+                });
+                grid.addAttr("selectedRow", { value: null });
+                grid.delegate('click', function (e) {
+                    this.set('selectedRow', e.currentTarget);
+                }, '.yui3-datatable-data tr', grid);
+
+                grid.after('selectedRowChange', function (e) {
+                    var tr = e.newVal,last_tr = e.prevVal,rec = this.getRecord(tr);
+                    if (!last_tr) {
+                        // first time thru ... display the Detail DT DIV that was hidden
+                        //Y.one("#chars").show();
+                    } else {
+                        last_tr.removeClass("myhilite");
+                    }
+
+                    tr.addClass("myhilite");
+                });
+                grid.plug(Y.Plugin.DataTableDataSource, { datasource: dataSource });
+                grid.render("#datatable_matchs");
+
+                Y.one("#btn_QueryHistoryMatchs").on("click", function (e) {
+                    var Detect_Result = Y.one("#Detect_Result");
+                    var win = Y.one("#diff_win");
+                    var draw = Y.one("#diff_draw");
+                    var lost = Y.one("#diff_lost");
+                    var flag = win.get("value") + draw.get("value") + lost.get("value");
+                    var r = Detect_Result.get("value");
+                    var query = "?d_result=" + r + "&flag=" + flag;
+                    grid.datasource.load({ request: query });
+                });
+            });
+</script>
 <script src="vendor/prettify/prettify-min.js"></script>
 <script>prettyPrint();</script>
 </body>
