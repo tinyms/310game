@@ -63,8 +63,8 @@ def wl_lb_match_history_cache(matchs):
     finally:
         cnn.close()
 
-def query_history_matchs(d_result,flag):
-    sql = "SELECT * FROM matchs WHERE detect_result = %s AND wl_lb_flag = %s ORDER BY random() LIMIT 50";
+def query_history_matchs(d_result,flag,odds_direction,odds_int_num):
+    sql = "SELECT * FROM matchs WHERE detect_result = %s AND wl_lb_flag = %s ORDER BY random() LIMIT 40";
     matchs = list()
     try:
         cnn = pg_open()

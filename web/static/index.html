@@ -27,9 +27,43 @@
             /*  Turn on cursor to show TR's are selectable on Master DataTable only  */
             cursor: pointer;
         }
+
+            /* Hide overlay markup while loading, if js is enabled */
+        .yui3-js-enabled .yui3-overlay-loading {
+            top: -1000em;
+            left: -1000em;
+            position: absolute;
+        }
+
+            /* Overlay Look/Feel */
+        .yui3-overlay-content {
+            background-color: #ECEFFB;
+            border: 1px solid #9EA8C6;
+            border-radius: 3px;
+            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.25);
+        }
+
+        .yui3-overlay-content .yui3-widget-hd {
+            background-color: #B6BFDA;
+            color: #30418C;
+            font-size: 120%;
+            font-weight: bold;
+            padding: 0.2em 0.5em 0.3em;
+            border-radius: 2px 2px 0 0;
+        }
+
+        .yui3-overlay-content .yui3-widget-bd {
+            padding: 0.4em 0.6em 0.5em;
+        }
+
+        .yui3-overlay-content .yui3-widget-ft {
+            background-color: #DFE3F5;
+            padding: 0.4em 0.6em 0.5em;
+            border-radius: 0 0 2px 2px;
+        }
     </style>
 </head>
-<body>
+<body class="yui3-skin-sam">
 <div id="doc">
     <div id="hd">
         <h1><img src="http://yuilibrary.com/img/yui-logo.png"></h1>
@@ -63,7 +97,7 @@
                             <option value="31">31</option>
                             <option value="10">10</option>
                         </select>
-                            胜: <select id="diff_win">
+                            (胜: <select id="diff_win">
                             <option value="N">不变</option>
                             <option value="H">高</option>
                             <option value="L">低</option>
@@ -77,115 +111,54 @@
                             <option value="N">不变</option>
                             <option value="H">高</option>
                             <option value="L">低</option>
-                        </select>
+                        </select>)-(
+                            方向: <select id="odds_direction">
+                            <option value="-1"></option>
+                            <option value="3">主胜</option>
+                            <option value="0">客胜</option>
+                            </select>
+                            模式: <input type="text" id="odds_int_num"/>
+                            )
                             <input id="btn_QueryHistoryMatchs" class='yui3-button' type="button" value="搜索"
                                    style="margin-left: 10px;"/>
                         </div>
 
                         <div id="datatable_matchs" style="margin-top: 10px;"></div>
 
+                        <div id="overlay" class="yui3-overlay-loading">
+                            <div class="yui3-widget-hd">球队概况及变赔</div>
+                            <div class="yui3-widget-bd">Overlay Body</div>
+                            <div class="yui3-widget-ft"></div>
+                        </div>
+
+                        <textarea id="overlay-content-template" style="display: none;">
+                            <div>近10场: <%= this.last_10%></div>
+                            <div>近06场: <%= this.last_6%></div>
+                            <div>近04场: <%= this.last_4%></div>
+                            <div>战绩状态: <%= this.last_battle%></div>
+                        </textarea>
                     </div>
 
                 </div>
-            </div>
-        </div>
-
-        <div class="yui3-u-1-4">
-            <div class="sidebar">
-
-
-                <div class="sidebox">
-                    <div class="hd">
-                        <h2 class="no-toc">Examples</h2>
-                    </div>
-
-                    <div class="bd">
-                        <ul class="examples">
-
-
-                            <li data-description="This example illustrates simple DataTable use cases.">
-                                <a href="datatable-basic.html">Basic DataTable</a>
-                            </li>
-
-
-                            <li data-description="DataTable loaded with JSON data from a remote webservice via DataSource.Get">
-                                <a href="datatable-dsget.html">DataTable + DataSource.Get + JSON Data</a>
-                            </li>
-
-
-                            <li data-description="DataTable loaded with XML data from a remote webservice via DataSource.IO.">
-                                <a href="datatable-dsio.html">DataTable + DataSource.IO + XML Data</a>
-                            </li>
-
-
-                            <li data-description="Custom format data for display.">
-                                <a href="datatable-formatting.html">Formatting Row Data for Display</a>
-                            </li>
-
-
-                            <li data-description="DataTable with nested column headers.">
-                                <a href="datatable-nestedcols.html">Nested Column Headers</a>
-                            </li>
-
-
-                            <li data-description="DataTable with column sorting.">
-                                <a href="datatable-sort.html">Column Sorting</a>
-                            </li>
-
-
-                            <li data-description="DataTable with vertical and/or horizontal scrolling rows.">
-                                <a href="datatable-scroll.html">Scrolling DataTable</a>
-                            </li>
-
-
-                            <li data-description="Using DataTable&#x27;s recordType attribute to create calculated, sortable columns.">
-                                <a href="datatable-recordtype.html">Sortable generated columns</a>
-                            </li>
-
-
-                            <li data-description="Populating one DataTable from details in the data of another.">
-                                <a href="datatable-masterdetail.html">Master and detail tables</a>
-                            </li>
-
-
-                            <li data-description="Checkbox column that retains checked state when sorting.">
-                                <a href="datatable-chkboxselect.html">Checkbox select column</a>
-                            </li>
-
-
-                        </ul>
-                    </div>
-                </div>
-
-
-                <div class="sidebox">
-                    <div class="hd">
-                        <h2 class="no-toc">Examples That Use This Component</h2>
-                    </div>
-
-                    <div class="bd">
-                        <ul class="examples">
-
-                            <li data-description="Shows how to instantiate multiple Panel instances, and use nested modality to interact with a Datatable.">
-                                <a href="../panel/panel-form.html">Creating a Modal Form</a>
-                            </li>
-
-
-                        </ul>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
 </div>
 <script type="text/javascript">
-    YUI().use("node", "datatable", "datasource-get", "datatype-number",
+    YUI().use("node", "datatable", "datasource-get", "datatype-number", "overlay", "template",
             "datasource-jsonschema", "datatable-datasource", function (Y) {
                 function format_float(num) {
                     return Y.Number.format(num, {decimalPlaces: 2})
                 }
 
+                //Details Tip.
+                var overlay = new Y.Overlay({
+                    srcNode: "#overlay",
+                    width: "400px",
+                    height: "180px",
+                    visible: false,
+                    shim: false
+                });
                 var url = "/match/history", dataSource, grid;
                 dataSource = new Y.DataSource.Get({ source: url });
                 dataSource.plug(Y.Plugin.DataSourceJSONSchema, {
@@ -225,6 +198,11 @@
 
                 grid = new Y.DataTable({
                     columns: [
+                        {   key: 'select',
+                            label:"选择",
+                            allowHTML: true, // to avoid HTML escaping
+                            formatter: '<input type="checkbox"/>'
+                        },
                         {label: "球差", key: "balls_diff"},
                         {label: "预测", key: "detect_result"},
                         {label: "赛果", key: "actual_result"},
@@ -256,33 +234,47 @@
                         {label: "比赛日期", key: "vs_date"}
                     ]
                 });
+
                 grid.addAttr("selectedRow", { value: null });
                 grid.delegate('click', function (e) {
+
+                    overlay.show();
+                    overlay.move(e.pageX + 30, e.pageY - 15);
                     this.set('selectedRow', e.currentTarget);
                 }, '.yui3-datatable-data tr', grid);
 
                 grid.after('selectedRowChange', function (e) {
-                    var tr = e.newVal,last_tr = e.prevVal,rec = this.getRecord(tr);
-                    if (!last_tr) {
-                        // first time thru ... display the Detail DT DIV that was hidden
-                        //Y.one("#chars").show();
-                    } else {
+                    var last_tr = e.prevVal, tr = e.newVal, rec = this.getRecord(tr);
+                    if (last_tr) {
                         last_tr.removeClass("myhilite");
                     }
-
                     tr.addClass("myhilite");
+                    var data = {
+                        last_10: rec.get("last_10"),
+                        last_6: rec.get("last_6"),
+                        last_4: rec.get("last_4"),
+                        last_battle: rec.get("last_battle")
+                    };
+                    console.log(rec.get("vs_team_names"));
+                    var tpl = Y.one("#overlay-content-template").get("value");
+                    var micro = new Y.Template();
+                    var html = micro.render(tpl, data);
+                    overlay.setStdModContent("body", html, "replace");
                 });
                 grid.plug(Y.Plugin.DataTableDataSource, { datasource: dataSource });
                 grid.render("#datatable_matchs");
 
+                overlay.render();
                 Y.one("#btn_QueryHistoryMatchs").on("click", function (e) {
                     var Detect_Result = Y.one("#Detect_Result");
                     var win = Y.one("#diff_win");
                     var draw = Y.one("#diff_draw");
                     var lost = Y.one("#diff_lost");
+                    var odds_direction = Y.one("#odds_direction").get("value");
+                    var odds_int_num = Y.one("#odds_int_num").get("value");
                     var flag = win.get("value") + draw.get("value") + lost.get("value");
                     var r = Detect_Result.get("value");
-                    var query = "?d_result=" + r + "&flag=" + flag;
+                    var query = "?d_result=" + r + "&flag=" + flag +"&odds_direction="+odds_direction+"&odds_int_num="+odds_int_num;
                     grid.datasource.load({ request: query });
                 });
             });
