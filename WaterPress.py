@@ -15,6 +15,7 @@ from utils import url_with_params,write_file
 from utils import MatchsTreeModel,get_cache_web_file_name
 from parse import HtmlParseThread,DownloadHistoryMatch
 from PyQt5 import QtCore,QtGui,QtWidgets,QtWebKitWidgets
+from postgres import wl_lb_match_history_cache
 
 class CustomTreeView(QtWidgets.QTreeView):
     #signal_row_clicked = QtCore.pyqtSignal(int)
@@ -298,7 +299,8 @@ class Workbench(QtWidgets.QWidget):
             self.clear_button.setEnabled(True)
             self.urlComboBox.setEnabled(True)
         elif msg == "cache_history_data":
-            batch_save_history_matchs(self.download_history_thread.dataset)
+            #batch_save_history_matchs(self.download_history_thread.dataset)
+            wl_lb_match_history_cache(self.download_history_thread.dataset)
             pass
         elif msg == "completed":
             self.execute_button.setEnabled(True)

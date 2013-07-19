@@ -11,7 +11,6 @@ import urllib.parse
 #from datetime import date,datetime
 from bs4 import BeautifulSoup
 from PyQt5 import QtCore,QtGui
-from formula import Result,odds_detect_exclude_one_result
 
 import sqlite3
 
@@ -52,6 +51,7 @@ def create_history_db():
     """)
     cnn.commit()
     cur.close()
+
 
 def batch_save_history_matchs(ds):
     try:
