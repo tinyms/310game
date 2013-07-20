@@ -86,35 +86,43 @@
                         }
                     </style>
                     <div class="example yui3-skin-sam">
-                        <div>
+                        <div>(
                             实力: <select id="Detect_Result">
-                            <option value="3">3</option>
-                            <option value="1">1</option>
-                            <option value="0">0</option>
-                            <option value="31">31</option>
-                            <option value="10">10</option>
-                        </select>
-                            (胜: <select id="diff_win">
-                            <option value="N">不变</option>
-                            <option value="H">高</option>
-                            <option value="L">低</option>
-                        </select>
+                                <option value="3">3</option>
+                                <option value="1">1</option>
+                                <option value="0">0</option>
+                                <option value="31">31</option>
+                                <option value="10">10</option>
+                            </select>
+                            赛果: <select id="match_result">
+                                <option value="310">胜平负</option>
+                                <option value="3">胜</option>
+                                <option value="1">平</option>
+                                <option value="0">负</option>
+                            </select>
+                            )~(
+                            胜: <select id="diff_win">
+                                <option value="N">不变</option>
+                                <option value="H">高</option>
+                                <option value="L">低</option>
+                            </select>
                             平: <select id="diff_draw">
-                            <option value="N">不变</option>
-                            <option value="H">高</option>
-                            <option value="L">低</option>
-                        </select>
+                                <option value="N">不变</option>
+                                <option value="H">高</option>
+                                <option value="L">低</option>
+                            </select>
                             负: <select id="diff_lost">
-                            <option value="N">不变</option>
-                            <option value="H">高</option>
-                            <option value="L">低</option>
-                        </select>)-(
+                                <option value="N">不变</option>
+                                <option value="H">高</option>
+                                <option value="L">低</option>
+                            </select>
+                            )-(
                             方向: <select id="odds_direction">
-                            <option value="-1"></option>
-                            <option value="3">主胜</option>
-                            <option value="0">客胜</option>
-                            <option value="1">均等</option>
-                        </select>
+                                <option value="-1"></option>
+                                <option value="3">主胜</option>
+                                <option value="0">客胜</option>
+                                <option value="1">均等</option>
+                            </select>
                             模式: <input type="text" id="odds_int_num"/>
                             )
                             <input id="btn_QueryHistoryMatchs" class='yui3-button' type="button" value="搜索"
@@ -161,8 +169,8 @@
                 }
 
                 function format_odds_change(odds, odds_c) {
-                    var a = format_float(odds[0])+" "+format_float(odds[1])+" "+format_float(odds[2])
-                    var b = format_float(odds_c[0])+" "+format_float(odds_c[1])+" "+format_float(odds_c[2])
+                    var a = format_float(odds[0]) + " " + format_float(odds[1]) + " " + format_float(odds[2])
+                    var b = format_float(odds_c[0]) + " " + format_float(odds_c[1]) + " " + format_float(odds_c[2])
                     var tmp = [odds_c[0] - odds[0], odds_c[1] - odds[1], odds_c[2] - odds[2]];
                     var tmp2 = [];
                     if (tmp[0] > 0) {
@@ -297,9 +305,9 @@
                         last_battle: rec.get("last_battle"),
                         odds_wl_c: format_odds_change(rec.get("odds_wl"), rec.get("odds_wl_c")),
                         odds_lb_c: format_odds_change(rec.get("odds_lb"), rec.get("odds_lb_c")),
-                        odds_am_c:format_odds_change(rec.get("odds_am"), rec.get("odds_am_c")),
-                        odds_beta_c:format_odds_change(rec.get("odds_beta"), rec.get("odds_beta_c")),
-                        odds_ysb_c:format_odds_change(rec.get("odds_ysb"), rec.get("odds_ysb_c"))
+                        odds_am_c: format_odds_change(rec.get("odds_am"), rec.get("odds_am_c")),
+                        odds_beta_c: format_odds_change(rec.get("odds_beta"), rec.get("odds_beta_c")),
+                        odds_ysb_c: format_odds_change(rec.get("odds_ysb"), rec.get("odds_ysb_c"))
                     };
                     console.log(rec.get("vs_team_names"));
                     var tpl = Y.one("#overlay-content-template").get("value");
@@ -320,7 +328,9 @@
                     var odds_int_num = Y.one("#odds_int_num").get("value");
                     var flag = win.get("value") + draw.get("value") + lost.get("value");
                     var r = Detect_Result.get("value");
-                    var query = "?d_result=" + r + "&flag=" + flag + "&odds_direction=" + odds_direction + "&odds_int_num=" + odds_int_num;
+                    var match_result = Y.one("#match_result").get("value");
+                    var query = "?d_result=" + r + "&flag=" + flag + "&odds_direction="
+                            + odds_direction + "&odds_int_num=" + odds_int_num+"&match_result="+match_result;
                     grid.datasource.load({ request: query });
                 });
             });

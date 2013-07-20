@@ -64,10 +64,13 @@ def wl_lb_match_history_cache(matchs):
     finally:
         cnn.close()
 
-def query_history_matchs(d_result,flag,odds_direction,odds_int_num):
+def query_history_matchs(d_result,flag,match_result,odds_direction,odds_int_num):
 
     #odds_direction
     where_extra = ""
+    if match_result != "310":
+        where_extra += " AND actual_result = %s " % match_result
+
     if odds_direction != "-1":
         int_space = get_number(odds_int_num,0)
         if odds_direction == "3":

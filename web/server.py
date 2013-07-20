@@ -16,8 +16,9 @@ class MatchHistoryHandler(RequestHandler):
         flag = self.get_argument("flag")
         odds_direction = self.get_argument("odds_direction")
         odds_int_num = self.get_argument("odds_int_num")
+        match_result = self.get_argument("match_result")
         callback = self.get_argument("callback")
-        dataset["matchs"] = query_history_matchs(d_result,flag,odds_direction,odds_int_num)
+        dataset["matchs"] = query_history_matchs(d_result,flag,match_result,odds_direction,odds_int_num)
         self.set_header("Content-Type","text/javascript")
         self.write(callback+"("+json.dumps(dataset)+")")
 
