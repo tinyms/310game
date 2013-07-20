@@ -64,10 +64,7 @@
     </style>
 </head>
 <body class="yui3-skin-sam">
-<div id="doc">
-    <div id="hd">
-        <h1><img src="http://yuilibrary.com/img/yui-logo.png"></h1>
-    </div>
+<div id="doc" style="margin-top: 15px;">
     <div class="yui3-g">
         <div class="yui3-u-3-4">
             <div id="main">
@@ -116,7 +113,8 @@
                             <option value="-1"></option>
                             <option value="3">主胜</option>
                             <option value="0">客胜</option>
-                            </select>
+                            <option value="1">均等</option>
+                        </select>
                             模式: <input type="text" id="odds_int_num"/>
                             )
                             <input id="btn_QueryHistoryMatchs" class='yui3-button' type="button" value="搜索"
@@ -132,10 +130,21 @@
                         </div>
 
                         <textarea id="overlay-content-template" style="display: none;">
-                            <div>近10场: <%= this.last_10%></div>
-                            <div>近06场: <%= this.last_6%></div>
-                            <div>近04场: <%= this.last_4%></div>
-                            <div>战绩状态: <%= this.last_battle%></div>
+                            <div style="border-bottom: 1px solid #ee8811;margin-top: 5px;">概况</div>
+                            <div style="margin-top: 5px; text-indent: 10px;">
+                                <div>近10场: <%= this.last_10%></div>
+                                <div>近06场: <%= this.last_6%></div>
+                                <div>近04场: <%= this.last_4%></div>
+                                <div>战绩状态: <%= this.last_battle%></div>
+                            </div>
+                            <div style="border-bottom: 1px solid #ee8811;margin-top: 5px;">变盘</div>
+                            <div style="margin-top: 5px;text-indent: 10px;">
+                                <div>威廉: <%== this.odds_wl_c%></div>
+                                <div>立博: <%== this.odds_lb_c%></div>
+                                <div>澳门: <%== this.odds_am_c%></div>
+                                <div>贝塔: <%== this.odds_beta_c%></div>
+                                <div>易博: <%== this.odds_ysb_c%></div>
+                            </div>
                         </textarea>
                     </div>
 
@@ -151,13 +160,44 @@
                     return Y.Number.format(num, {decimalPlaces: 2})
                 }
 
+                function format_odds_change(odds, odds_c) {
+                    var a = format_float(odds[0])+" "+format_float(odds[1])+" "+format_float(odds[2])
+                    var b = format_float(odds_c[0])+" "+format_float(odds_c[1])+" "+format_float(odds_c[2])
+                    var tmp = [odds_c[0] - odds[0], odds_c[1] - odds[1], odds_c[2] - odds[2]];
+                    var tmp2 = [];
+                    if (tmp[0] > 0) {
+                        tmp2.push("<span style='color:red;'>+" + format_float(tmp[0]) + "</span>");
+                    } else if (tmp[0] < 0) {
+                        tmp2.push("<span style='color:green;'>" + format_float(tmp[0]) + "</span>");
+                    } else {
+                        tmp2.push("+" + format_float(tmp[0]));
+                    }
+                    if (tmp[1] > 0) {
+                        tmp2.push("<span style='color:red;'>+" + format_float(tmp[1]) + "</span>");
+                    } else if (tmp[1] < 0) {
+                        tmp2.push("<span style='color:green;'>" + format_float(tmp[1]) + "</span>");
+                    } else {
+                        tmp2.push("+" + format_float(tmp[1]));
+                    }
+                    if (tmp[2] > 0) {
+                        tmp2.push("<span style='color:red;'>+" + format_float(tmp[2]) + "</span>");
+                    } else if (tmp[2] < 0) {
+                        tmp2.push("<span style='color:green;'>" + format_float(tmp[2]) + "</span>");
+                    } else {
+                        tmp2.push("+" + format_float(tmp[2]));
+                    }
+                    var c = tmp2.join(" ")
+                    return a + "~" + b + "~" + c;
+                }
+
                 //Details Tip.
                 var overlay = new Y.Overlay({
                     srcNode: "#overlay",
                     width: "400px",
-                    height: "180px",
+                    height: "300px",
                     visible: false,
-                    shim: false
+                    shim: false,
+                    allowHTML: true
                 });
                 var url = "/match/history", dataSource, grid;
                 dataSource = new Y.DataSource.Get({ source: url });
@@ -197,9 +237,10 @@
                 });
 
                 grid = new Y.DataTable({
+                    scrollable: "y",
                     columns: [
                         {   key: 'select',
-                            label:"选择",
+                            label: "选择",
                             allowHTML: true, // to avoid HTML escaping
                             formatter: '<input type="checkbox"/>'
                         },
@@ -253,13 +294,18 @@
                         last_10: rec.get("last_10"),
                         last_6: rec.get("last_6"),
                         last_4: rec.get("last_4"),
-                        last_battle: rec.get("last_battle")
+                        last_battle: rec.get("last_battle"),
+                        odds_wl_c: format_odds_change(rec.get("odds_wl"), rec.get("odds_wl_c")),
+                        odds_lb_c: format_odds_change(rec.get("odds_lb"), rec.get("odds_lb_c")),
+                        odds_am_c:format_odds_change(rec.get("odds_am"), rec.get("odds_am_c")),
+                        odds_beta_c:format_odds_change(rec.get("odds_beta"), rec.get("odds_beta_c")),
+                        odds_ysb_c:format_odds_change(rec.get("odds_ysb"), rec.get("odds_ysb_c"))
                     };
                     console.log(rec.get("vs_team_names"));
                     var tpl = Y.one("#overlay-content-template").get("value");
                     var micro = new Y.Template();
                     var html = micro.render(tpl, data);
-                    overlay.setStdModContent("body", html, "replace");
+                    overlay.set("bodyContent", html);
                 });
                 grid.plug(Y.Plugin.DataTableDataSource, { datasource: dataSource });
                 grid.render("#datatable_matchs");
@@ -274,7 +320,7 @@
                     var odds_int_num = Y.one("#odds_int_num").get("value");
                     var flag = win.get("value") + draw.get("value") + lost.get("value");
                     var r = Detect_Result.get("value");
-                    var query = "?d_result=" + r + "&flag=" + flag +"&odds_direction="+odds_direction+"&odds_int_num="+odds_int_num;
+                    var query = "?d_result=" + r + "&flag=" + flag + "&odds_direction=" + odds_direction + "&odds_int_num=" + odds_int_num;
                     grid.datasource.load({ request: query });
                 });
             });

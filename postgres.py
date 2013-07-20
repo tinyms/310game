@@ -1,10 +1,11 @@
 __author__ = 'tinyms'
 
+import re
 import psycopg2
 import psycopg2.extras
 
 def pg_open():
-    return psycopg2.connect(database="postgres",user="postgres",password="1")
+    return psycopg2.connect(database="tinyms",user="postgres",password="1")
 
 def to_floats(odds_text):
     if not odds_text:
@@ -64,7 +65,24 @@ def wl_lb_match_history_cache(matchs):
         cnn.close()
 
 def query_history_matchs(d_result,flag,odds_direction,odds_int_num):
-    sql = "SELECT * FROM matchs WHERE detect_result = %s AND wl_lb_flag = %s ORDER BY random() LIMIT 40";
+
+    #odds_direction
+    where_extra = ""
+    if odds_direction != "-1":
+        int_space = get_number(odds_int_num,0)
+        if odds_direction == "3":
+            where_extra = " AND odds_wl[1] < odds_wl[3] "
+            if int_space >= 1:
+                where_extra += " AND (odds_wl[1]>=%i AND odds_wl[1]<=%i)" % (int_space,int(int_space+1))
+        elif odds_direction == "0":
+            where_extra = " AND odds_wl[1] > odds_wl[3] "
+            if int_space >= 1:
+                where_extra += " AND (odds_wl[3]>=%i AND odds_wl[3]<=%i)" % (int_space,int(int_space+1))
+        elif odds_direction == "1":
+            where_extra = " AND odds_wl[1] = odds_wl[3] "
+
+    sql = "SELECT * FROM matchs WHERE detect_result = %s AND wl_lb_flag = %s "+where_extra+" ORDER BY random() LIMIT 40";
+    print(sql)
     matchs = list()
     try:
         cnn = pg_open()
@@ -110,6 +128,15 @@ def format_first_odds(wl_odds):
     if draw_ext >= 0.5:
         return "%.2f <span color='red'>%.2f</span> %.2f" % (wl_odds[0],wl_odds[1],wl_odds[2])
     return "%.2f %.2f %.2f" % (wl_odds[0],wl_odds[1],wl_odds[2])
+
+def get_number(text,default_ = 0):
+    if not text:
+        return default_
+    p = re.compile("\\d+")
+    nums = p.findall(text)
+    if len(nums)>0:
+        return int(nums[0])
+    return default_
 
 def decimals_to_floats(arr):
     return [round(float(d),2) for d in arr]
