@@ -5,7 +5,7 @@ import psycopg2
 import psycopg2.extras
 
 def pg_open():
-    return psycopg2.connect(database="tinyms",user="postgres",password="1")
+    return psycopg2.connect(database="postgres",user="postgres",password="1")
 
 def to_floats(odds_text):
     if not odds_text:
@@ -76,20 +76,25 @@ def query_history_matchs(d_result,flag,match_result,odds_direction,odds_int_num)
         if odds_direction == "3":
             where_extra += " AND odds_wl[1] < odds_wl[3] "
             if int_space >= 1:
-                where_extra += " AND (odds_wl[1]>=%i AND odds_wl[1]<=%i)" % (int_space,int(int_space+1))
+                where_extra += " AND (odds_wl[1]>=%.2f AND odds_wl[1]<=%i)" % (int_space,int(int_space+1))
         elif odds_direction == "0":
             where_extra += " AND odds_wl[1] > odds_wl[3] "
             if int_space >= 1:
-                where_extra += " AND (odds_wl[3]>=%i AND odds_wl[3]<=%i)" % (int_space,int(int_space+1))
+                where_extra += " AND (odds_wl[3]>=%.2f AND odds_wl[3]<=%i)" % (int_space,int(int_space+1))
         elif odds_direction == "1":
             where_extra += " AND odds_wl[1] = odds_wl[3] "
 
-    sql = "SELECT * FROM matchs WHERE detect_result = %s AND wl_lb_flag = %s "+where_extra+" ORDER BY random() LIMIT 40";
+    count_sql = "SELECT COUNT(1) FROM matchs WHERE detect_result = %s AND wl_lb_flag = %s "+where_extra
+    sql = "SELECT * FROM matchs WHERE detect_result = %s AND wl_lb_flag = %s "+where_extra+" ORDER BY random() LIMIT 25";
     print(sql)
+    result = dict()
     matchs = list()
     try:
         cnn = pg_open()
         cur = cnn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cur.execute(count_sql,(d_result,flag))
+        total = cur.fetchone()
+        print(total)
         cur.execute(sql,(d_result,flag))
         rows = cur.fetchall()
         for row in rows:
@@ -119,26 +124,20 @@ def query_history_matchs(d_result,flag,match_result,odds_direction,odds_int_num)
             match["evt_name"] = row["evt_name"]
             match["url_key"] = row["url_key"]
             match["vs_date"] = row["vs_date"]
-            #match["first_odds_wl"] = format_first_odds(row["odds_wl"])
             matchs.append(match)
     finally:
         cnn.close()
-
-    return matchs
-
-def format_first_odds(wl_odds):
-    draw_ext = round(wl_odds[1] - int(wl_odds[1]),2)
-    if draw_ext >= 0.5:
-        return "%.2f <span color='red'>%.2f</span> %.2f" % (wl_odds[0],wl_odds[1],wl_odds[2])
-    return "%.2f %.2f %.2f" % (wl_odds[0],wl_odds[1],wl_odds[2])
+    result["items"] = matchs
+    result["total"] = total
+    return result
 
 def get_number(text,default_ = 0):
     if not text:
         return default_
-    p = re.compile("\\d+")
+    p = re.compile("\\d+[\\.]?\\d+")
     nums = p.findall(text)
     if len(nums)>0:
-        return int(nums[0])
+        return float(nums[0])
     return default_
 
 def decimals_to_floats(arr):

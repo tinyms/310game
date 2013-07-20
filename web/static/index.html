@@ -66,7 +66,7 @@
 <body class="yui3-skin-sam">
 <div id="doc" style="margin-top: 15px;">
     <div class="yui3-g">
-        <div class="yui3-u-3-4">
+        <div class="yui3-u-1">
             <div id="main">
                 <div class="content">
                     <style scoped>
@@ -123,12 +123,12 @@
                                 <option value="0">客胜</option>
                                 <option value="1">均等</option>
                             </select>
-                            模式: <input type="text" id="odds_int_num"/>
+                            胜负赔: <input type="text" id="odds_int_num"/>
                             )
                             <input id="btn_QueryHistoryMatchs" class='yui3-button' type="button" value="搜索"
                                    style="margin-left: 10px;"/>
                         </div>
-
+                        <div>*共过滤出<span id="records_total_tip" style="color: red;"></span>条记录,随机显示最多25条</div>
                         <div id="datatable_matchs" style="margin-top: 10px;"></div>
 
                         <div id="overlay" class="yui3-overlay-loading">
@@ -211,7 +211,7 @@
                 dataSource = new Y.DataSource.Get({ source: url });
                 dataSource.plug(Y.Plugin.DataSourceJSONSchema, {
                     schema: {
-                        resultListLocator: "matchs",
+                        resultListLocator: "matchs.items",
                         resultFields: [
                             { key: 'id'},
                             { key: 'score'},
@@ -243,7 +243,9 @@
                         ]
                     }
                 });
-
+                dataSource.on("data",function(e){
+                    Y.one("#records_total_tip").set("text",e.data.matchs.total[0]);
+                });
                 grid = new Y.DataTable({
                     scrollable: "y",
                     columns: [
