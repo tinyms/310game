@@ -74,15 +74,15 @@ def query_history_matchs(d_result,flag,match_result,odds_direction,odds_int_num)
     if odds_direction != "-1":
         int_space = get_number(odds_int_num,0)
         if odds_direction == "3":
-            where_extra = " AND odds_wl[1] < odds_wl[3] "
+            where_extra += " AND odds_wl[1] < odds_wl[3] "
             if int_space >= 1:
                 where_extra += " AND (odds_wl[1]>=%i AND odds_wl[1]<=%i)" % (int_space,int(int_space+1))
         elif odds_direction == "0":
-            where_extra = " AND odds_wl[1] > odds_wl[3] "
+            where_extra += " AND odds_wl[1] > odds_wl[3] "
             if int_space >= 1:
                 where_extra += " AND (odds_wl[3]>=%i AND odds_wl[3]<=%i)" % (int_space,int(int_space+1))
         elif odds_direction == "1":
-            where_extra = " AND odds_wl[1] = odds_wl[3] "
+            where_extra += " AND odds_wl[1] = odds_wl[3] "
 
     sql = "SELECT * FROM matchs WHERE detect_result = %s AND wl_lb_flag = %s "+where_extra+" ORDER BY random() LIMIT 40";
     print(sql)
