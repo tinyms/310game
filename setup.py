@@ -8,8 +8,8 @@ if sys.platform == "win32":
     base = "Win32GUI"
 
 setup(
-        name = "WaterPress",
-        version = "3.2",
-        description = "WaterPress for football match",
-        options = {"build_exe" : {"includes" : ["PyQt5.QtWebKitWidgets","PyQt5.QtNetwork"] }},
-        executables = [Executable("Main.py", base = base)])
+        name = "310game",
+        version = "1.0",
+        description = "310game web app",
+        #options = {"build_exe" : {"includes" : ["PyQt5.QtWebKitWidgets","PyQt5.QtNetwork"] }},
+        executables = [Executable("web/server.py", base = base)])

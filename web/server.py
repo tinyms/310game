@@ -2,7 +2,7 @@ __author__ = 'tinyms'
 
 from tornado.ioloop import IOLoop
 from tornado.web import RequestHandler,Application
-import webbrowser,os,json
+import webbrowser,os,json,sys
 from postgres import query_history_matchs
 
 class DefaultHandler(RequestHandler):
@@ -23,7 +23,7 @@ class MatchHistoryHandler(RequestHandler):
         self.write(callback+"("+json.dumps(dataset)+")")
 
 settings = {
-    "static_path" : os.path.join(os.path.dirname(__file__), "static")
+    "static_path" : os.path.join(os.getcwd(), "static")
 }
 
 app = Application([
@@ -34,5 +34,8 @@ app = Application([
 if __name__ == "__main__":
     port = 8888
     webbrowser.open_new_tab("http://localhost:%i" % port)
-    app.listen(port)
-    IOLoop.instance().start()
+    try:
+        app.listen(port)
+        IOLoop.instance().start()
+    except:
+        sys.exit(1)
