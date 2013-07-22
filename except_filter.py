@@ -36,11 +36,14 @@ class ExceptFilter():
         if not match["Odds_WL"]:
             return False
         arr = match["Odds_WL"].split(" ")
+        arr = [float(f) for f in arr]
         if len(arr) != 3:
             return False
-        draw = float(arr[1])
+        draw = arr[1]
         dot_part = draw - int(draw)
-        if dot_part >= 0.4:
+        if dot_part >= 0.4 and (arr[0]<arr[2]) and match["result"].find("3")!=-1:
+            return True
+        elif dot_part >= 0.4 and (arr[0]>arr[2]) and match["result"].find("0")!=-1:
             return True
         return False
 
