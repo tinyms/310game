@@ -4,14 +4,15 @@ Created on 2013-2-28
 @author: tinyms
 '''
 import images_rc
-import json,os,sys
+import os
+from except_filter import ExceptFilter
 from odds_statistics import Odds_Statistics
-from utils import send_msg,md5,read_file,get_short_time
-from utils import MessageService,batch_save_history_matchs
+from utils import send_msg,md5
+from utils import MessageService
 from utils import mkdirs,get_date_text
 from utils import get_last_access_urls,create_history_db
 from utils import cache_last_access_urls
-from utils import url_with_params,write_file
+from utils import url_with_params
 from utils import MatchsTreeModel,get_cache_web_file_name
 from parse import HtmlParseThread,DownloadHistoryMatch
 from PyQt5 import QtCore,QtGui,QtWidgets,QtWebKitWidgets
@@ -50,7 +51,7 @@ class Workbench(QtWidgets.QWidget):
         headerLayout = QtWidgets.QHBoxLayout()
         headerWidget.setLayout(headerLayout)
 
-        self.select_all_checkbox = QtWidgets.QCheckBox("全包")
+        self.select_all_checkbox = QtWidgets.QCheckBox("过滤")
         self.select_all_checkbox.stateChanged.connect(self.on_select_all_310_clicked)
         self.example_checkbox = QtWidgets.QCheckBox("练习")
         self.rq_checkbox = QtWidgets.QCheckBox("让球")
@@ -152,13 +153,17 @@ class Workbench(QtWidgets.QWidget):
         pass
 
     def on_select_all_310_clicked(self,state):
-        if state:
-            for m in self.analyze_thread.dataset:
-                if not m["actual_result"]:
-                    m["actual_result"] = "310"
-            self.data_grid_model = MatchsTreeModel(self.analyze_thread.dataset)
-            self.matchs_grid.setModel(self.data_grid_model)
-        pass
+        filter_ = ExceptFilter()
+        self.analyze_thread.dataset = filter_.check(self.analyze_thread.dataset)
+        self.data_grid_model = MatchsTreeModel(self.analyze_thread.dataset)
+        self.matchs_grid.setModel(self.data_grid_model)
+        # if state:
+        #     for m in self.analyze_thread.dataset:
+        #         if not m["actual_result"]:
+        #             m["actual_result"] = "310"
+        #     self.data_grid_model = MatchsTreeModel(self.analyze_thread.dataset)
+        #     self.matchs_grid.setModel(self.data_grid_model)
+        # pass
 
     def win_draw_lost_checkbox_clicked(self,state):
         if self.current_matchgrid_selected_rowindex != -1:
