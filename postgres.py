@@ -74,7 +74,7 @@ def query_history_matchs(d_result, flag, match_result, odds_direction, odds_int_
         where_extra += " AND actual_result = %s " % match_result
 
     if flag:
-        where_extra += " AND wl_lb_flag = %s " % flag
+        where_extra += " AND wl_lb_flag = '%s' " % flag
 
     if odds_direction != "-1":
         int_space = get_number(odds_int_num, 0)
