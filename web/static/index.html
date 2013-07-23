@@ -102,16 +102,19 @@
                             </select>
                             )~(
                             胜: <select id="diff_win">
+                                <option value=""> </option>
                                 <option value="N">不变</option>
                                 <option value="H">高</option>
                                 <option value="L">低</option>
                             </select>
                             平: <select id="diff_draw">
+                                <option value=""> </option>
                                 <option value="N">不变</option>
                                 <option value="H">高</option>
                                 <option value="L">低</option>
                             </select>
                             负: <select id="diff_lost">
+                                <option value=""> </option>
                                 <option value="N">不变</option>
                                 <option value="H">高</option>
                                 <option value="L">低</option>
@@ -279,7 +282,10 @@
                             var odds = col.value;
                             return format_float(odds[0]) + " " + format_float(odds[1]) + " " + format_float(odds[2]);
                         }, allowHTML: true},
-                        {label: "对阵球队", key: "vs_team_names"},
+                        {label: "对阵球队", key: "vs_team_names",formatter:function(col){
+                            console.log(col);
+                            return "<a href='http://odds.500.com/fenxi/ouzhi-"+col.data.url_key+"#datatb' target='_blank'>" + col.value + "</a>";
+                        }, allowHTML: true},
                         {label: "比分", key: "score"},
                         {label: "赛事", key: "evt_name"},
                         {label: "比赛日期", key: "vs_date"}
@@ -311,7 +317,6 @@
                         odds_beta_c: format_odds_change(rec.get("odds_beta"), rec.get("odds_beta_c")),
                         odds_ysb_c: format_odds_change(rec.get("odds_ysb"), rec.get("odds_ysb_c"))
                     };
-                    console.log(rec.get("vs_team_names"));
                     var tpl = Y.one("#overlay-content-template").get("value");
                     var micro = new Y.Template();
                     var html = micro.render(tpl, data);
