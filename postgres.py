@@ -6,7 +6,7 @@ import psycopg2.extras
 
 
 def pg_open():
-    return psycopg2.connect(database="tinyms", user="postgres", password="1")
+    return psycopg2.connect(database="postgres", user="postgres", password="1")
 
 
 def to_floats(odds_text):
@@ -69,7 +69,7 @@ def wl_lb_match_history_cache(matchs):
 
 def query_history_matchs(d_result, flag, match_result, odds_direction, odds_int_num):
     #odds_direction
-    where_extra = ""
+    where_extra = " detect_result = '%s' " % d_result
     if match_result != "310":
         where_extra += " AND actual_result = %s " % match_result
 
@@ -81,25 +81,25 @@ def query_history_matchs(d_result, flag, match_result, odds_direction, odds_int_
         if odds_direction == "3":
             where_extra += " AND odds_wl[1] < odds_wl[3] "
             if int_space >= 1:
-                where_extra += " AND (odds_wl[1]>=%.2f AND odds_wl[1]<=%i)" % (int_space, int(int_space + 1))
+                where_extra += " AND (odds_wl[1]>=%.2f AND odds_wl[1]<=%.2f)" % (int_space-0.1, int_space + 0.1)
         elif odds_direction == "0":
             where_extra += " AND odds_wl[1] > odds_wl[3] "
             if int_space >= 1:
-                where_extra += " AND (odds_wl[3]>=%.2f AND odds_wl[3]<=%i)" % (int_space, int(int_space + 1))
+                where_extra += " AND (odds_wl[3]>=%.2f AND odds_wl[3]<=%.2f)" % (int_space-0.1, int_space + 0.1)
         elif odds_direction == "1":
             where_extra += " AND odds_wl[1] = odds_wl[3] "
 
-    count_sql = "SELECT COUNT(1) FROM matchs WHERE detect_result = %s " + where_extra
-    sql = "SELECT * FROM matchs WHERE detect_result = %s " + where_extra + " ORDER BY random() LIMIT 25";
+    count_sql = "SELECT COUNT(1) FROM matchs WHERE " + where_extra
+    sql = "SELECT * FROM matchs WHERE " + where_extra + " ORDER BY random() LIMIT 25";
     print(sql)
     result = dict()
     matchs = list()
     try:
         cnn = pg_open()
         cur = cnn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur.execute(count_sql, d_result)
+        cur.execute(count_sql)
         total = cur.fetchone()
-        cur.execute(sql, d_result)
+        cur.execute(sql)
         rows = cur.fetchall()
         for row in rows:
             match = dict()
