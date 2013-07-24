@@ -61,6 +61,21 @@
             padding: 0.4em 0.6em 0.5em;
             border-radius: 0 0 2px 2px;
         }
+
+        .content table {
+            width: auto;
+            font-family: "微软雅黑", Verdana, sans-serif, "宋体";
+        }
+
+        .content caption {
+            display: table-caption;
+        }
+
+        .content th,
+        .content td {
+            border: 0 none;
+            text-transform: none;
+        }
     </style>
 </head>
 <body class="yui3-skin-sam">
@@ -69,278 +84,369 @@
         <div class="yui3-u-1">
             <div id="main">
                 <div class="content">
-                    <style scoped>
-                            /* css to counter global site css */
-                        .example table {
-                            width: auto;
-                        }
+                    <div id="tab_global">
+                        <ul>
+                            <li><a href="#workflow">选单流程</a></li>
+                            <li><a href="#history_query">历史查询</a></li>
+                        </ul>
+                        <div>
+                            <div id="workflow" style="padding: 10px;">
+                                <input id="btn_add_workflow" class='yui3-button' type="button" value="新增场次"/>
 
-                        .example caption {
-                            display: table-caption;
-                        }
-
-                        .example th,
-                        .example td {
-                            border: 0 none;
-                            text-transform: none;
-                        }
-                    </style>
-                    <div class="example yui3-skin-sam">
-                        <div>(
-                            实力: <select id="Detect_Result">
-                                <option value="3">3</option>
-                                <option value="1">1</option>
-                                <option value="0">0</option>
-                                <option value="31">31</option>
-                                <option value="10">10</option>
-                            </select>
-                            赛果: <select id="match_result">
-                                <option value="310">胜平负</option>
-                                <option value="3">胜</option>
-                                <option value="1">平</option>
-                                <option value="0">负</option>
-                            </select>
-                            )~(
-                            胜: <select id="diff_win">
-                                <option value=""> </option>
-                                <option value="N">不变</option>
-                                <option value="H">高</option>
-                                <option value="L">低</option>
-                            </select>
-                            平: <select id="diff_draw">
-                                <option value=""> </option>
-                                <option value="N">不变</option>
-                                <option value="H">高</option>
-                                <option value="L">低</option>
-                            </select>
-                            负: <select id="diff_lost">
-                                <option value=""> </option>
-                                <option value="N">不变</option>
-                                <option value="H">高</option>
-                                <option value="L">低</option>
-                            </select>
-                            )-(
-                            方向: <select id="odds_direction">
-                                <option value="-1"></option>
-                                <option value="3">主胜</option>
-                                <option value="0">客胜</option>
-                                <option value="1">均等</option>
-                            </select>
-                            胜负赔: <input type="text" id="odds_int_num"/>
-                            )
-                            <input id="btn_QueryHistoryMatchs" class='yui3-button' type="button" value="搜索"
-                                   style="margin-left: 10px;"/>
-                        </div>
-                        <div>*共过滤出<span id="records_total_tip" style="color: red;"></span>条记录,随机显示最多25条</div>
-                        <div id="datatable_matchs" style="margin-top: 10px;"></div>
-
-                        <div id="overlay" class="yui3-overlay-loading">
-                            <div class="yui3-widget-hd">球队概况及变赔</div>
-                            <div class="yui3-widget-bd">Overlay Body</div>
-                            <div class="yui3-widget-ft"></div>
-                        </div>
-
-                        <textarea id="overlay-content-template" style="display: none;">
-                            <div style="border-bottom: 1px solid #ee8811;margin-top: 5px;">概况</div>
-                            <div style="margin-top: 5px; text-indent: 10px;">
-                                <div>近10场: <%= this.last_10%></div>
-                                <div>近06场: <%= this.last_6%></div>
-                                <div>近04场: <%= this.last_4%></div>
-                                <div>战绩状态: <%= this.last_battle%></div>
+                                <div id="workflow_datatable" style="margin-top: 10px;"></div>
                             </div>
-                            <div style="border-bottom: 1px solid #ee8811;margin-top: 5px;">变盘</div>
-                            <div style="margin-top: 5px;text-indent: 10px;">
-                                <div>威廉: <%== this.odds_wl_c%></div>
-                                <div>立博: <%== this.odds_lb_c%></div>
-                                <div>澳门: <%== this.odds_am_c%></div>
-                                <div>贝塔: <%== this.odds_beta_c%></div>
-                                <div>易博: <%== this.odds_ysb_c%></div>
+                            <div id="history_query">
+                                <div class="example yui3-skin-sam">
+                                    <div>(
+                                        实力: <select id="Detect_Result">
+                                            <option value="3">3</option>
+                                            <option value="1">1</option>
+                                            <option value="0">0</option>
+                                            <option value="31">31</option>
+                                            <option value="10">10</option>
+                                        </select>
+                                        赛果: <select id="match_result">
+                                            <option value="310">胜平负</option>
+                                            <option value="3">胜</option>
+                                            <option value="1">平</option>
+                                            <option value="0">负</option>
+                                        </select>
+                                        )~(
+                                        胜: <select id="diff_win">
+                                            <option value=""></option>
+                                            <option value="N">不变</option>
+                                            <option value="H">高</option>
+                                            <option value="L">低</option>
+                                        </select>
+                                        平: <select id="diff_draw">
+                                            <option value=""></option>
+                                            <option value="N">不变</option>
+                                            <option value="H">高</option>
+                                            <option value="L">低</option>
+                                        </select>
+                                        负: <select id="diff_lost">
+                                            <option value=""></option>
+                                            <option value="N">不变</option>
+                                            <option value="H">高</option>
+                                            <option value="L">低</option>
+                                        </select>
+                                        )-(
+                                        方向: <select id="odds_direction">
+                                            <option value="-1"></option>
+                                            <option value="3">主胜</option>
+                                            <option value="0">客胜</option>
+                                            <option value="1">均等</option>
+                                        </select>
+                                        胜负赔: <input type="text" id="odds_int_num"/>
+                                        )
+                                        <input id="btn_QueryHistoryMatchs" class='yui3-button' type="button" value="搜索"
+                                               style="margin-left: 10px;"/>
+                                    </div>
+                                    <div>*共过滤出<span id="records_total_tip" style="color: red;"></span>条记录,随机显示最多25条
+                                    </div>
+                                    <div id="datatable_matchs" style="margin-top: 10px;"></div>
+
+                                    <div id="overlay" class="yui3-overlay-loading">
+                                        <div class="yui3-widget-hd">球队概况及变赔</div>
+                                        <div class="yui3-widget-bd">Overlay Body</div>
+                                        <div class="yui3-widget-ft"></div>
+                                    </div>
+
+                                    <textarea id="overlay-content-template" style="display: none;">
+                                        <div style="border-bottom: 1px solid #ee8811;margin-top: 5px;">概况</div>
+                                        <div style="margin-top: 5px; text-indent: 10px;">
+                                            <div>近10场: <%= this.last_10%></div>
+                                            <div>近06场: <%= this.last_6%></div>
+                                            <div>近04场: <%= this.last_4%></div>
+                                            <div>战绩状态: <%= this.last_battle%></div>
+                                        </div>
+                                        <div style="border-bottom: 1px solid #ee8811;margin-top: 5px;">变盘</div>
+                                        <div style="margin-top: 5px;text-indent: 10px;">
+                                            <div>威廉: <%== this.odds_wl_c%></div>
+                                            <div>立博: <%== this.odds_lb_c%></div>
+                                            <div>澳门: <%== this.odds_am_c%></div>
+                                            <div>贝塔: <%== this.odds_beta_c%></div>
+                                            <div>易博: <%== this.odds_ysb_c%></div>
+                                        </div>
+                                    </textarea>
+                                </div>
                             </div>
-                        </textarea>
+                        </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 </div>
 <script type="text/javascript">
-    YUI().use("node", "datatable", "datasource-get", "datatype-number", "overlay", "template",
-            "datasource-jsonschema", "datatable-datasource", function (Y) {
-                function format_float(num) {
-                    return Y.Number.format(num, {decimalPlaces: 2})
+YUI(
+        {gallery: 'gallery-2013.01.16-21-05'}
+).use("node", "datatable", "datasource-get", "datatype-number", "gallery-datatable-formatters", "gallery-calendar-jumpnav", "calendar",
+        "overlay", "template", "tabview", "gallery-datatable-celleditor-popup", "gallery-datatable-editable", "cssfonts", "cssbutton",
+        "datasource-jsonschema", "datatable-datasource", function (Y) {
+            function format_float(num) {
+                return Y.Number.format(num, {decimalPlaces: 2})
+            }
+
+            function format_odds_change(odds, odds_c) {
+                var a = format_float(odds[0]) + " " + format_float(odds[1]) + " " + format_float(odds[2])
+                var b = format_float(odds_c[0]) + " " + format_float(odds_c[1]) + " " + format_float(odds_c[2])
+                var tmp = [odds_c[0] - odds[0], odds_c[1] - odds[1], odds_c[2] - odds[2]];
+                var tmp2 = [];
+                if (tmp[0] > 0) {
+                    tmp2.push("<span style='color:red;'>+" + format_float(tmp[0]) + "</span>");
+                } else if (tmp[0] < 0) {
+                    tmp2.push("<span style='color:green;'>" + format_float(tmp[0]) + "</span>");
+                } else {
+                    tmp2.push("+" + format_float(tmp[0]));
                 }
-
-                function format_odds_change(odds, odds_c) {
-                    var a = format_float(odds[0]) + " " + format_float(odds[1]) + " " + format_float(odds[2])
-                    var b = format_float(odds_c[0]) + " " + format_float(odds_c[1]) + " " + format_float(odds_c[2])
-                    var tmp = [odds_c[0] - odds[0], odds_c[1] - odds[1], odds_c[2] - odds[2]];
-                    var tmp2 = [];
-                    if (tmp[0] > 0) {
-                        tmp2.push("<span style='color:red;'>+" + format_float(tmp[0]) + "</span>");
-                    } else if (tmp[0] < 0) {
-                        tmp2.push("<span style='color:green;'>" + format_float(tmp[0]) + "</span>");
-                    } else {
-                        tmp2.push("+" + format_float(tmp[0]));
-                    }
-                    if (tmp[1] > 0) {
-                        tmp2.push("<span style='color:red;'>+" + format_float(tmp[1]) + "</span>");
-                    } else if (tmp[1] < 0) {
-                        tmp2.push("<span style='color:green;'>" + format_float(tmp[1]) + "</span>");
-                    } else {
-                        tmp2.push("+" + format_float(tmp[1]));
-                    }
-                    if (tmp[2] > 0) {
-                        tmp2.push("<span style='color:red;'>+" + format_float(tmp[2]) + "</span>");
-                    } else if (tmp[2] < 0) {
-                        tmp2.push("<span style='color:green;'>" + format_float(tmp[2]) + "</span>");
-                    } else {
-                        tmp2.push("+" + format_float(tmp[2]));
-                    }
-                    var c = tmp2.join(" ")
-                    return a + "~" + b + "~" + c;
+                if (tmp[1] > 0) {
+                    tmp2.push("<span style='color:red;'>+" + format_float(tmp[1]) + "</span>");
+                } else if (tmp[1] < 0) {
+                    tmp2.push("<span style='color:green;'>" + format_float(tmp[1]) + "</span>");
+                } else {
+                    tmp2.push("+" + format_float(tmp[1]));
                 }
+                if (tmp[2] > 0) {
+                    tmp2.push("<span style='color:red;'>+" + format_float(tmp[2]) + "</span>");
+                } else if (tmp[2] < 0) {
+                    tmp2.push("<span style='color:green;'>" + format_float(tmp[2]) + "</span>");
+                } else {
+                    tmp2.push("+" + format_float(tmp[2]));
+                }
+                var c = tmp2.join(" ")
+                return a + "~" + b + "~" + c;
+            }
 
-                //Details Tip.
-                var overlay = new Y.Overlay({
-                    srcNode: "#overlay",
-                    width: "400px",
-                    height: "300px",
-                    visible: false,
-                    shim: false,
-                    allowHTML: true
-                });
-                var url = "/match/history", dataSource, grid;
-                dataSource = new Y.DataSource.Get({ source: url });
-                dataSource.plug(Y.Plugin.DataSourceJSONSchema, {
-                    schema: {
-                        resultListLocator: "matchs.items",
-                        resultFields: [
-                            { key: 'id'},
-                            { key: 'score'},
-                            { key: 'actual_result'},
-                            { key: 'detect_result'},
-                            { key: 'balls_diff'},
-                            { key: 'vs_team_names'},
-                            { key: 'last_10'},
-                            { key: 'last_6'},
-                            { key: 'last_4'},
-                            { key: 'last_battle'},
-                            { key: 'odds_wl'},
-                            { key: 'odds_lb'},
-                            { key: 'odds_am'},
-                            { key: 'odds_beta'},
-                            { key: 'odds_ysb'},
-                            { key: 'odds_wl_c'},
-                            { key: 'odds_lb_c'},
-                            { key: 'odds_am_c'},
-                            { key: 'odds_beta_c'},
-                            { key: 'odds_ysb_c'},
-                            { key: 'wl_lb_flag'},
-                            { key: 'wl_lb_diff'},
-                            { key: 'evt_name'},
-                            { key: 'url_key'},
-                            { key: 'vs_date'},
-                            //Extra Fields
-                            { key: 'first_odds_wl'}
-                        ]
-                    }
-                });
-                dataSource.on("data",function(e){
-                    Y.one("#records_total_tip").set("text",e.data.matchs.total[0]);
-                });
-                grid = new Y.DataTable({
-                    scrollable: "y",
-                    columns: [
-                        {   key: 'select',
-                            label: "选择",
-                            allowHTML: true, // to avoid HTML escaping
-                            formatter: '<input type="checkbox"/>'
-                        },
-                        {label: "球差", key: "balls_diff"},
-                        {label: "预测", key: "detect_result"},
-                        {label: "赛果", key: "actual_result"},
-                        {label: "初盘(威廉)", key: "odds_wl", formatter: function (col) {
-                            var odds = col.value;
-                            var draw = parseInt(odds[1])
-                            var dot_part = odds[1] - draw
-                            if (dot_part >= 0.5) {
-                                return format_float(odds[0]) + " <span style='color: red;'>" + format_float(odds[1]) + "</span> " + format_float(odds[2]);
-                            }
-                            return format_float(odds[0]) + " " + format_float(odds[1]) + " " + format_float(odds[2]);
-                        }, allowHTML: true},
-                        {label: "初盘(立博)", key: "odds_lb", formatter: function (col) {
-                            var odds = col.value;
-                            var draw = parseInt(odds[1])
-                            var dot_part = odds[1] - draw
-                            if (dot_part >= 0.5) {
-                                return format_float(odds[0]) + " <span style='color: red;'>" + format_float(odds[1]) + "</span> " + format_float(odds[2]);
-                            }
-                            return format_float(odds[0]) + " " + format_float(odds[1]) + " " + format_float(odds[2]);
-                        }, allowHTML: true},
-                        {label: "差异幅度", key: "wl_lb_diff", formatter: function (col) {
-                            var odds = col.value;
-                            return format_float(odds[0]) + " " + format_float(odds[1]) + " " + format_float(odds[2]);
-                        }, allowHTML: true},
-                        {label: "对阵球队", key: "vs_team_names",formatter:function(col){
-                            console.log(col);
-                            return "<a href='http://odds.500.com/fenxi/ouzhi-"+col.data.url_key+"#datatb' target='_blank'>" + col.value + "</a>";
-                        }, allowHTML: true},
-                        {label: "比分", key: "score"},
-                        {label: "赛事", key: "evt_name"},
-                        {label: "比赛日期", key: "vs_date"}
-                    ]
-                });
-
-                grid.addAttr("selectedRow", { value: null });
-                grid.delegate('click', function (e) {
-
-                    overlay.show();
-                    overlay.move(e.pageX + 30, e.pageY - 15);
-                    this.set('selectedRow', e.currentTarget);
-                }, '.yui3-datatable-data tr', grid);
-
-                grid.after('selectedRowChange', function (e) {
-                    var last_tr = e.prevVal, tr = e.newVal, rec = this.getRecord(tr);
-                    if (last_tr) {
-                        last_tr.removeClass("myhilite");
-                    }
-                    tr.addClass("myhilite");
-                    var data = {
-                        last_10: rec.get("last_10"),
-                        last_6: rec.get("last_6"),
-                        last_4: rec.get("last_4"),
-                        last_battle: rec.get("last_battle"),
-                        odds_wl_c: format_odds_change(rec.get("odds_wl"), rec.get("odds_wl_c")),
-                        odds_lb_c: format_odds_change(rec.get("odds_lb"), rec.get("odds_lb_c")),
-                        odds_am_c: format_odds_change(rec.get("odds_am"), rec.get("odds_am_c")),
-                        odds_beta_c: format_odds_change(rec.get("odds_beta"), rec.get("odds_beta_c")),
-                        odds_ysb_c: format_odds_change(rec.get("odds_ysb"), rec.get("odds_ysb_c"))
-                    };
-                    var tpl = Y.one("#overlay-content-template").get("value");
-                    var micro = new Y.Template();
-                    var html = micro.render(tpl, data);
-                    overlay.set("bodyContent", html);
-                });
-                grid.plug(Y.Plugin.DataTableDataSource, { datasource: dataSource });
-                grid.render("#datatable_matchs");
-
-                overlay.render();
-                Y.one("#btn_QueryHistoryMatchs").on("click", function (e) {
-                    var Detect_Result = Y.one("#Detect_Result");
-                    var win = Y.one("#diff_win");
-                    var draw = Y.one("#diff_draw");
-                    var lost = Y.one("#diff_lost");
-                    var odds_direction = Y.one("#odds_direction").get("value");
-                    var odds_int_num = Y.one("#odds_int_num").get("value");
-                    var flag = win.get("value") + draw.get("value") + lost.get("value");
-                    var r = Detect_Result.get("value");
-                    var match_result = Y.one("#match_result").get("value");
-                    var query = "?d_result=" + r + "&flag=" + flag + "&odds_direction="
-                            + odds_direction + "&odds_int_num=" + odds_int_num+"&match_result="+match_result;
-                    grid.datasource.load({ request: query });
-                });
+            var global_tab = new Y.TabView({srcNode: '#tab_global'});
+            global_tab.render();
+            //Details Tip.
+            var overlay = new Y.Overlay({
+                srcNode: "#overlay",
+                width: "400px",
+                height: "300px",
+                visible: false,
+                shim: false,
+                allowHTML: true
             });
+            overlay.render();
+            var url = "/match/history", dataSource, grid, workflow_datatable, workflow_datatable_data;
+            dataSource = new Y.DataSource.Get({ source: url });
+            dataSource.plug(Y.Plugin.DataSourceJSONSchema, {
+                schema: {
+                    resultListLocator: "matchs.items",
+                    resultFields: [
+                        { key: 'id'},
+                        { key: 'score'},
+                        { key: 'actual_result'},
+                        { key: 'detect_result'},
+                        { key: 'balls_diff'},
+                        { key: 'vs_team_names'},
+                        { key: 'last_10'},
+                        { key: 'last_6'},
+                        { key: 'last_4'},
+                        { key: 'last_battle'},
+                        { key: 'odds_wl'},
+                        { key: 'odds_lb'},
+                        { key: 'odds_am'},
+                        { key: 'odds_beta'},
+                        { key: 'odds_ysb'},
+                        { key: 'odds_wl_c'},
+                        { key: 'odds_lb_c'},
+                        { key: 'odds_am_c'},
+                        { key: 'odds_beta_c'},
+                        { key: 'odds_ysb_c'},
+                        { key: 'wl_lb_flag'},
+                        { key: 'wl_lb_diff'},
+                        { key: 'evt_name'},
+                        { key: 'url_key'},
+                        { key: 'vs_date'},
+                        //Extra Fields
+                        { key: 'first_odds_wl'}
+                    ]
+                }
+            });
+            dataSource.on("data", function (e) {
+                Y.one("#records_total_tip").set("text", e.data.matchs.total[0]);
+            });
+            grid = new Y.DataTable({
+                scrollable: "y",
+                columns: [
+                    {   key: 'select',
+                        label: "选择",
+                        allowHTML: true, // to avoid HTML escaping
+                        formatter: '<input type="checkbox"/>'
+                    },
+                    {label: "球差", key: "balls_diff"},
+                    {label: "预测", key: "detect_result"},
+                    {label: "赛果", key: "actual_result"},
+                    {label: "初盘(威廉)", key: "odds_wl", formatter: function (col) {
+                        var odds = col.value;
+                        var draw = parseInt(odds[1])
+                        var dot_part = odds[1] - draw
+                        if (dot_part >= 0.5) {
+                            return format_float(odds[0]) + " <span style='color: red;'>" + format_float(odds[1]) + "</span> " + format_float(odds[2]);
+                        }
+                        return format_float(odds[0]) + " " + format_float(odds[1]) + " " + format_float(odds[2]);
+                    }, allowHTML: true},
+                    {label: "初盘(立博)", key: "odds_lb", formatter: function (col) {
+                        var odds = col.value;
+                        var draw = parseInt(odds[1])
+                        var dot_part = odds[1] - draw
+                        if (dot_part >= 0.5) {
+                            return format_float(odds[0]) + " <span style='color: red;'>" + format_float(odds[1]) + "</span> " + format_float(odds[2]);
+                        }
+                        return format_float(odds[0]) + " " + format_float(odds[1]) + " " + format_float(odds[2]);
+                    }, allowHTML: true},
+                    {label: "差异幅度", key: "wl_lb_diff", formatter: function (col) {
+                        var odds = col.value;
+                        return format_float(odds[0]) + " " + format_float(odds[1]) + " " + format_float(odds[2]);
+                    }, allowHTML: true},
+                    {label: "对阵球队", key: "vs_team_names", formatter: function (col) {
+                        console.log(col);
+                        return "<a href='http://odds.500.com/fenxi/ouzhi-" + col.data.url_key + "#datatb' target='_blank'>" + col.value + "</a>";
+                    }, allowHTML: true},
+                    {label: "比分", key: "score"},
+                    {label: "赛事", key: "evt_name"},
+                    {label: "比赛日期", key: "vs_date"}
+                ]
+            });
+
+            grid.addAttr("selectedRow", { value: null });
+            grid.delegate('click', function (e) {
+
+                overlay.show();
+                overlay.move(e.pageX + 30, e.pageY - 15);
+                this.set('selectedRow', e.currentTarget);
+            }, '.yui3-datatable-data tr', grid);
+
+            grid.after('selectedRowChange', function (e) {
+                var last_tr = e.prevVal, tr = e.newVal, rec = this.getRecord(tr);
+                if (last_tr) {
+                    last_tr.removeClass("myhilite");
+                }
+                tr.addClass("myhilite");
+                var data = {
+                    last_10: rec.get("last_10"),
+                    last_6: rec.get("last_6"),
+                    last_4: rec.get("last_4"),
+                    last_battle: rec.get("last_battle"),
+                    odds_wl_c: format_odds_change(rec.get("odds_wl"), rec.get("odds_wl_c")),
+                    odds_lb_c: format_odds_change(rec.get("odds_lb"), rec.get("odds_lb_c")),
+                    odds_am_c: format_odds_change(rec.get("odds_am"), rec.get("odds_am_c")),
+                    odds_beta_c: format_odds_change(rec.get("odds_beta"), rec.get("odds_beta_c")),
+                    odds_ysb_c: format_odds_change(rec.get("odds_ysb"), rec.get("odds_ysb_c"))
+                };
+                var tpl = Y.one("#overlay-content-template").get("value");
+                var micro = new Y.Template();
+                var html = micro.render(tpl, data);
+                overlay.set("bodyContent", html);
+            });
+            grid.plug(Y.Plugin.DataTableDataSource, { datasource: dataSource });
+            grid.render("#datatable_matchs");
+
+            //workflow datatable.
+            workflow_datatable_data = [];
+            workflow_datatable = new Y.DataTable({
+                columns: [
+                    {
+                        key: "no", label: "场次", editor:"number"
+                    },
+                    {
+                        key: "balls_diff", label: "实力", editor: "radio",
+                        editorConfig: {
+                            overlayWidth: 270,
+                            radioOptions: {'310': '310', '3': '3', '1': '1', '0': '0', '31': '31', '10': '10'}
+                        }
+                    },
+                    {
+                        key: "first_odds", label: "初赔", editor: "radio",
+                        editorConfig: {
+                            overlayWidth: 150,
+                            radioOptions: {'正常': '正常', '异常': '异常'}
+                        },
+                        formatter:function(col){
+                            if(col.value=="异常"){
+                                return "<span style='color: red;'>"+col.value+"</span>"
+                            }
+                            return col.value;
+                        }
+                        , allowHTML: true
+                    },
+                    {
+                        key: "change_odds", label: "变赔", editor: "radio",
+                        editorConfig: {
+                            overlayWidth: 150,
+                            radioOptions: {'正常': '正常', '异常': '异常'}
+                        },
+                        formatter:function(col){
+                            if(col.value=="异常"){
+                                return "<span style='color: red;'>"+col.value+"</span>"
+                            }
+                            return col.value;
+                        }, allowHTML: true
+                    },
+                    {
+                        key: "top_select", label: "首选", editor: "radio",
+                        editorConfig: {
+                            overlayWidth: 310,
+                            radioOptions: {'310': '310', '3': '3', '1': '1', '0': '0', '31': '31', '10': '10', '30': '30'}
+                        }
+                    },
+                    {
+                        key: "additional_select", label: "补选", editor: "radio",
+                        editorConfig: {
+                            overlayWidth: 150,
+                            radioOptions: {'3': '3', '1': '1', '0': '0'}
+                        }
+                    },
+                    {
+                        key: "fix_no", label: "稳胆", editor: "radio",
+                        editorConfig: {
+                            overlayWidth: 150,
+                            radioOptions: {'是': '是', '否': '否'}
+                        },
+                        formatter:function(col){
+                            if(col.value=="是"){
+                                return "<span style='color: green;'>"+col.value+"</span>"
+                            }else if(col.value=="否"){
+                                return "<span style='color: red;'>"+col.value+"</span>"
+                            }
+                            return col.value;
+                        }, allowHTML: true
+                    },
+                    {
+                        key: "bak", label: "备注", editor: "textarea",
+                        width: 350
+                    }
+                ],
+                data: workflow_datatable_data,
+                editable: true,
+                editOpenType: 'click',
+                defaultEditor: 'text'
+            }).render("#workflow_datatable");
+
+            Y.one("#btn_QueryHistoryMatchs").on("click", function (e) {
+                var Detect_Result = Y.one("#Detect_Result");
+                var win = Y.one("#diff_win");
+                var draw = Y.one("#diff_draw");
+                var lost = Y.one("#diff_lost");
+                var odds_direction = Y.one("#odds_direction").get("value");
+                var odds_int_num = Y.one("#odds_int_num").get("value");
+                var flag = win.get("value") + draw.get("value") + lost.get("value");
+                var r = Detect_Result.get("value");
+                var match_result = Y.one("#match_result").get("value");
+                var query = "?d_result=" + r + "&flag=" + flag + "&odds_direction="
+                        + odds_direction + "&odds_int_num=" + odds_int_num + "&match_result=" + match_result;
+                grid.datasource.load({ request: query });
+            });
+
+            var match_no_id = 1;
+            Y.one("#btn_add_workflow").on("click", function (e) {
+                workflow_datatable.addRow({no: match_no_id, balls_diff: "", first_odds: "", change_odds: "", top_select: "", additional_select: "", fix_no: "", bak: ""});
+                match_no_id++;
+            });
+        });
 </script>
 <script src="vendor/prettify/prettify-min.js"></script>
 <script>prettyPrint();</script>
