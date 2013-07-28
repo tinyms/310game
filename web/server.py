@@ -2,9 +2,16 @@ __author__ = 'tinyms'
 
 from tornado.ioloop import IOLoop
 from tornado.web import RequestHandler,Application
-import webbrowser,os,json,sys
+import webbrowser,os,json,sys,re
 from postgres import query_history_matchs
 from lottery import combination
+
+def get_number(text):
+    p = re.compile("\\d+")
+    nums = p.findall(text)
+    if len(nums)>0:
+        return int(nums[0])
+    return 0
 
 class DefaultHandler(RequestHandler):
     def get(self):
@@ -27,10 +34,18 @@ class SingleBetting(RequestHandler):
     def get(self):
         guess_match_results = self.get_argument("guess_match_results")
         callback = self.get_argument("callback")
+        rates = self.get_argument("rates")
+        limit = get_number(self.get_argument("Orders_Number"))
+        rates_float = [round(float(s),1) for s in json.loads(rates)]
+        print(rates_float)
         self.set_header("Content-Type","text/javascript;charset=utf-8")
-        data = combination.generate(guess_match_results)
         dataset = dict()
-        dataset["result"] = data
+        if guess_match_results:
+            if len(rates_float) == 0:
+                data = combination.generate(guess_match_results,rates_float,limit)
+            else:
+                data = combination.generate(guess_match_results,rates_float,limit)
+            dataset["result"] = data
         self.write(callback+"("+json.dumps(dataset)+")")
 
 settings = {

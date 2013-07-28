@@ -3,7 +3,9 @@ __author__ = 'tinyms'
 import concurrent.futures
 
 
-def generate(guess_results, similar_rate=[0.8,0.7], limit=32):
+def generate(guess_results, similar_rate=[0.8], limit=32):
+    if len(similar_rate) == 0:
+        similar_rate = [0.8]
     items = [s.strip(" ") for s in guess_results.split(",")]
     import itertools, random
     from difflib import SequenceMatcher
@@ -39,6 +41,8 @@ def generate(guess_results, similar_rate=[0.8,0.7], limit=32):
 
     result = dict()
     result["summary"] = summary
+    if limit == 0:
+        limit = 32
     normal = end[:limit]
     result["result"] = normal
     result["balance"] = _random_results_balance(normal)

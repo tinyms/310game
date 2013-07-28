@@ -99,6 +99,7 @@
                             </div>
                             <div id="single_betting_tab">
                                 <div>
+                                    注数:<input id="Orders_Number" type="text" value="32"/>
                                     <input id="guess_match_results" type="text" style="width: 500px;"/>
                                     <input id="btn_betting_test" class='yui3-button' type="button" value="测试"/>
                                     <input id="btn_betting_generic" class='yui3-button' type="button" value="生成"/>
@@ -106,11 +107,16 @@
                                 <div id="random_rate" style="margin-top: 5px;margin-bottom: 5px;">
 
                                 </div>
-                                <div><textarea id="textarea_betting_result" rows="20" cols="100"></textarea></div>
-                                <div style="margin-top: 10px;">覆盖率:</div>
-                                <div style="margin-top: 5px;" id="distributed_report" style="margin-top: 10px;">
+                                <div class="yui3-g">
+                                <div class="yui3-u-1-3"><textarea id="textarea_betting_result" rows="20"
+                                                                  cols="50"></textarea></div>
+                                <div class="yui3-u-1-3">
+                                    <div style="margin-top: 10px;">覆盖率:</div>
+                                    <div style="margin-top: 5px;" id="distributed_report" style="margin-top: 10px;">
 
+                                    </div>
                                 </div>
+                                    </div>
                             </div>
                             <div id="history_query">
                                 <div class="example yui3-skin-sam">
@@ -200,7 +206,8 @@ YUI(
         {gallery: 'gallery-2013.01.16-21-05'}
 ).use("node", "datatable", "datasource-get", "datatype-number", "gallery-datatable-formatters", "gallery-calendar-jumpnav", "calendar",
         "overlay", "template", "tabview", "gallery-datatable-celleditor-popup", "gallery-datatable-editable", "cssfonts", "cssbutton",
-        "datasource-jsonschema", "datatable-datasource", function (Y) {
+        "datasource-jsonschema", "datatable-datasource","json-stringify",
+        function (Y) {
             function format_float(num) {
                 return Y.Number.format(num, {decimalPlaces: 2})
             }
@@ -466,6 +473,7 @@ YUI(
                 //var btn_betting_generic = Y.one("#btn_betting_generic");
                 var textarea_betting_result = Y.one("#textarea_betting_result");
                 var distributed_report = Y.one("#distributed_report");
+                var Orders_Number = Y.one("#Orders_Number");
                 var random_rate = Y.one("#random_rate");
                 var myDataSource = new Y.DataSource.Get({
                     source: "/betting/single?"
@@ -477,28 +485,39 @@ YUI(
                         resultFields: ["result"]
                     }
                 });
+                var rates = [];
+                var rate_checks = Y.all("#random_rate input");
 
+                rate_checks.each(function(node){
+                    console.log(node.get("value"));
+                    if(node.get("checked")==true){
+                        rates.push(node.get("value"));
+                    }
+                });
+
+                console.log(rates);
+                var rates_json = Y.JSON.stringify(rates);
                 myDataSource.sendRequest({
-                    request: "guess_match_results="+guess_match_results,
+                    request: "guess_match_results=" + guess_match_results+"&rates="+rates_json+"&Orders_Number="+Orders_Number.get("value"),
                     callback: {
                         success: function (e) { /* output to screen */
 
                         },
                         failure: function (e) { /* output to screen */
-                            var html = "";
-                            for(var k in e.data.result.summary){
-                                html += "<span style='color:green;'>"+k+"</span>:<span style='color:red;'>" + e.data.result.summary[k]+"</span>,  "
+                            var html = "阀值: ";
+                            for (var k in e.data.result.summary) {
+                                html += "<input type='checkbox' value='" + k + "'/><span style='color:green;'>" + k + "</span>:<span style='color:red;'>" + e.data.result.summary[k] + "</span>,  "
                             }
                             random_rate.setHTML(html);
                             var results = "";
-                            for(var k=0;k<e.data.result.result_text_style.length;k++){
-                                results += e.data.result.result_text_style[k]+",\n";
+                            for (var k = 0; k < e.data.result.result_text_style.length; k++) {
+                                results += e.data.result.result_text_style[k] + ",\n";
                             }
-                            textarea_betting_result.set("value",results);
+                            textarea_betting_result.set("value", results);
                             var report = ""
                             console.log(e.data.result.balance);
-                            for(var k=0;k< e.data.result.balance.length;k++){
-                                report += "<div>第"+(k+1)+"场:"+e.data.result.balance[k]+"</div>";
+                            for (var k = 0; k < e.data.result.balance.length; k++) {
+                                report += "<div>第" + (k + 1) + "场:" + e.data.result.balance[k] + "</div>";
                             }
                             distributed_report.setHTML(report);
                         }
