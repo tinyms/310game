@@ -87,6 +87,7 @@
                     <div id="tab_global">
                         <ul>
                             <li><a href="#workflow">选单流程</a></li>
+                            <li><a href="#single_betting_tab">单式投注</a></li>
                             <li><a href="#history_query">历史查询</a></li>
                         </ul>
                         <div>
@@ -94,6 +95,22 @@
                                 <input id="btn_add_workflow" class='yui3-button' type="button" value="新增场次"/>
 
                                 <div id="workflow_datatable" style="margin-top: 10px;"></div>
+
+                            </div>
+                            <div id="single_betting_tab">
+                                <div>
+                                    <input id="guess_match_results" type="text" style="width: 500px;"/>
+                                    <input id="btn_betting_test" class='yui3-button' type="button" value="测试"/>
+                                    <input id="btn_betting_generic" class='yui3-button' type="button" value="生成"/>
+                                </div>
+                                <div id="random_rate" style="margin-top: 5px;margin-bottom: 5px;">
+
+                                </div>
+                                <div><textarea id="textarea_betting_result" rows="20" cols="100"></textarea></div>
+                                <div style="margin-top: 10px;">覆盖率:</div>
+                                <div style="margin-top: 5px;" id="distributed_report" style="margin-top: 10px;">
+
+                                </div>
                             </div>
                             <div id="history_query">
                                 <div class="example yui3-skin-sam">
@@ -311,10 +328,8 @@ YUI(
                     {label: "比赛日期", key: "vs_date"}
                 ]
             });
-
             grid.addAttr("selectedRow", { value: null });
             grid.delegate('click', function (e) {
-
                 overlay.show();
                 overlay.move(e.pageX + 30, e.pageY - 15);
                 this.set('selectedRow', e.currentTarget);
@@ -350,7 +365,7 @@ YUI(
             workflow_datatable = new Y.DataTable({
                 columns: [
                     {
-                        key: "no", label: "场次", editor:"number"
+                        key: "no", label: "场次", editor: "number"
                     },
                     {
                         key: "balls_diff", label: "实力", editor: "radio",
@@ -365,13 +380,12 @@ YUI(
                             overlayWidth: 150,
                             radioOptions: {'正常': '正常', '异常': '异常'}
                         },
-                        formatter:function(col){
-                            if(col.value=="异常"){
-                                return "<span style='color: red;'>"+col.value+"</span>"
+                        formatter: function (col) {
+                            if (col.value == "异常") {
+                                return "<span style='color: red;'>" + col.value + "</span>"
                             }
                             return col.value;
-                        }
-                        , allowHTML: true
+                        }, allowHTML: true
                     },
                     {
                         key: "change_odds", label: "变赔", editor: "radio",
@@ -379,9 +393,9 @@ YUI(
                             overlayWidth: 150,
                             radioOptions: {'正常': '正常', '异常': '异常'}
                         },
-                        formatter:function(col){
-                            if(col.value=="异常"){
-                                return "<span style='color: red;'>"+col.value+"</span>"
+                        formatter: function (col) {
+                            if (col.value == "异常") {
+                                return "<span style='color: red;'>" + col.value + "</span>"
                             }
                             return col.value;
                         }, allowHTML: true
@@ -406,11 +420,11 @@ YUI(
                             overlayWidth: 150,
                             radioOptions: {'是': '是', '否': '否'}
                         },
-                        formatter:function(col){
-                            if(col.value=="是"){
-                                return "<span style='color: green;'>"+col.value+"</span>"
-                            }else if(col.value=="否"){
-                                return "<span style='color: red;'>"+col.value+"</span>"
+                        formatter: function (col) {
+                            if (col.value == "是") {
+                                return "<span style='color: green;'>" + col.value + "</span>"
+                            } else if (col.value == "否") {
+                                return "<span style='color: red;'>" + col.value + "</span>"
                             }
                             return col.value;
                         }, allowHTML: true
@@ -445,6 +459,51 @@ YUI(
             Y.one("#btn_add_workflow").on("click", function (e) {
                 workflow_datatable.addRow({no: match_no_id, balls_diff: "", first_odds: "", change_odds: "", top_select: "", additional_select: "", fix_no: "", bak: ""});
                 match_no_id++;
+            });
+
+            Y.one("#btn_betting_test").on("click", function (e) {
+                var guess_match_results = Y.one("#guess_match_results").get("value");
+                //var btn_betting_generic = Y.one("#btn_betting_generic");
+                var textarea_betting_result = Y.one("#textarea_betting_result");
+                var distributed_report = Y.one("#distributed_report");
+                var random_rate = Y.one("#random_rate");
+                var myDataSource = new Y.DataSource.Get({
+                    source: "/betting/single?"
+                });
+
+                myDataSource.plug(Y.Plugin.DataSourceJSONSchema, {
+                    schema: {
+                        resultListLocator: "result",
+                        resultFields: ["result"]
+                    }
+                });
+
+                myDataSource.sendRequest({
+                    request: "guess_match_results="+guess_match_results,
+                    callback: {
+                        success: function (e) { /* output to screen */
+
+                        },
+                        failure: function (e) { /* output to screen */
+                            var html = "";
+                            for(var k in e.data.result.summary){
+                                html += "<span style='color:green;'>"+k+"</span>:<span style='color:red;'>" + e.data.result.summary[k]+"</span>,  "
+                            }
+                            random_rate.setHTML(html);
+                            var results = "";
+                            for(var k=0;k<e.data.result.result_text_style.length;k++){
+                                results += e.data.result.result_text_style[k]+",\n";
+                            }
+                            textarea_betting_result.set("value",results);
+                            var report = ""
+                            console.log(e.data.result.balance);
+                            for(var k=0;k< e.data.result.balance.length;k++){
+                                report += "<div>第"+(k+1)+"场:"+e.data.result.balance[k]+"</div>";
+                            }
+                            distributed_report.setHTML(report);
+                        }
+                    }
+                });
             });
         });
 </script>
