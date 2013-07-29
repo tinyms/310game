@@ -51,6 +51,18 @@ def generate(guess_results, similar_rate=[0.8], limit=32):
     for end_text in normal:
         end_text_style.append("".join(end_text))
     result["result_text_style"] = end_text_style
+    color_results = []
+    for color_r in normal:
+        tmp_color_arr = []
+        for color in color_r:
+            if color == "3":
+                tmp_color_arr.append("<span style='color:red;'>3</span>")
+            elif color == "1":
+                tmp_color_arr.append("<span style='color:green;'>1</span>")
+            elif color == "0":
+                tmp_color_arr.append("<span style='color:blue;'>0</span>")
+        color_results.append("".join(tmp_color_arr))
+    result["color_results"] = color_results
 
     return result
 

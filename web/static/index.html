@@ -3,7 +3,6 @@
 <head>
     <meta charset="utf-8">
     <title>Odds Query Builder</title>
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic">
     <link rel="stylesheet" href="yui3/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="yui3/cssbutton/cssbutton-min.css">
     <link rel="stylesheet" href="css/main.css">
@@ -16,7 +15,8 @@
         }
 
         body, table, input, textarea, select, button {
-            font-family: "微软雅黑", Verdana, sans-serif, "宋体";
+            font-family: "微软雅黑",Verdana, sans-serif,"宋体";
+            font-size: 12px;
         }
 
         .yui3-skin-sam .yui3-datatable tr.myhilite td {
@@ -108,8 +108,12 @@
 
                                 </div>
                                 <div class="yui3-g">
-                                <div class="yui3-u-1-3"><textarea id="textarea_betting_result" rows="20"
-                                                                  cols="50"></textarea></div>
+                                    <div class="yui3-u-1-3" id="color_results"></div>
+                                <div class="yui3-u-1-3">
+                                 <div><textarea id="textarea_betting_result" rows="20"
+                                                                  cols="50"></textarea>
+                                    </div>
+                                 </div>
                                 <div class="yui3-u-1-3">
                                     <div style="margin-top: 10px;">覆盖率:</div>
                                     <div style="margin-top: 5px;" id="distributed_report" style="margin-top: 10px;">
@@ -205,7 +209,7 @@
 YUI(
         {gallery: 'gallery-2013.01.16-21-05'}
 ).use("node", "datatable", "datasource-get", "datatype-number", "gallery-datatable-formatters", "gallery-calendar-jumpnav", "calendar",
-        "overlay", "template", "tabview", "gallery-datatable-celleditor-popup", "gallery-datatable-editable", "cssfonts", "cssbutton",
+        "overlay", "template", "tabview", "gallery-datatable-celleditor-popup", "gallery-datatable-editable", "cssbutton",
         "datasource-jsonschema", "datatable-datasource","json-stringify",
         function (Y) {
             function format_float(num) {
@@ -475,6 +479,7 @@ YUI(
                 var distributed_report = Y.one("#distributed_report");
                 var Orders_Number = Y.one("#Orders_Number");
                 var random_rate = Y.one("#random_rate");
+                var color_results = Y.one("#color_results");
                 var myDataSource = new Y.DataSource.Get({
                     source: "/betting/single?"
                 });
@@ -515,11 +520,15 @@ YUI(
                             }
                             textarea_betting_result.set("value", results);
                             var report = ""
-                            console.log(e.data.result.balance);
                             for (var k = 0; k < e.data.result.balance.length; k++) {
                                 report += "<div>第" + (k + 1) + "场:" + e.data.result.balance[k] + "</div>";
                             }
                             distributed_report.setHTML(report);
+                            var color_results_html = ""
+                            for (var k = 0; k < e.data.result.color_results.length; k++) {
+                                color_results_html += "<div>"+e.data.result.color_results[k] + "</div>";
+                            }
+                            color_results.setHTML(color_results_html);
                         }
                     }
                 });
