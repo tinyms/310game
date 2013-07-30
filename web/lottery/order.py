@@ -25,15 +25,14 @@ def parse():
 
 def analysis(limit = 32):
     import random,os
+    from difflib import SequenceMatcher
     ds = parse()
-    print(ds)
     for item in ds:
         nums = []
         percent = item[1]
         first = int(limit*percent)
         nums.append(first)
         second = limit - first
-        #print(second)
         if len(item[0]) == 3:
             three = int(second/2)
             second -= three
@@ -43,7 +42,14 @@ def analysis(limit = 32):
             nums.append(second)
 
         item.append(nums)
-    print(ds)
+
+    #first select
+    first = []
+    for item in ds:
+        first.append(item[0][0])
+    first = "".join(first)
+    print(first)
+
     results = []
     for item in ds:
         tmp = item[0][0]*item[2][0] + item[0][1]*item[2][1]
@@ -53,14 +59,30 @@ def analysis(limit = 32):
         for i in range(2):
             random.shuffle(tmp)
         results.append(tmp)
-        print(tmp)
-    #convert
+
+    #row and col reversion
     final_result = [[r[col] for r in results] for col in range(len(results[0]))]
     results_text = []
     for fr in final_result:
         results_text.append("".join(fr))
-        print("".join(fr))
 
+    #check match rate
+    match_rate = dict()
+    for r in results_text:
+        diff = SequenceMatcher(None, first, r)
+        ratio = round(diff.ratio(), 2)
+        if not match_rate.get(ratio):
+            match_rate[ratio] = [r]
+        else:
+            match_rate[ratio].append(r)
+
+    for k in match_rate.keys():
+        print("----------------------------------------")
+        print("%.2f:" % k)
+        print(match_rate[k])
+        print("----------------------------------------")
+    #write to file.
+    results_text.insert(0,first)
     f_name = "results.txt"
     if os.path.exists(f_name):
         os.remove(f_name)
@@ -68,5 +90,6 @@ def analysis(limit = 32):
     for line in results_text:
         f.write(line+",\n")
     f.close()
-analysis()
+
+analysis(limit=32)
 

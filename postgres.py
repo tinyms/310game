@@ -6,7 +6,7 @@ import psycopg2.extras
 
 
 def pg_open():
-    return psycopg2.connect(database="postgres", user="postgres", password="1")
+    return psycopg2.connect(database="tinyms", user="postgres", password="1")
 
 
 def to_floats(odds_text):
