@@ -1,185 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Odds Query Builder</title>
-    <link rel="stylesheet" href="yui3/cssgrids/cssgrids-min.css">
-    <link rel="stylesheet" href="yui3/cssbutton/cssbutton-min.css">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="vendor/prettify/prettify-min.css">
-    <script src="yui3/yui/yui-min.js"></script>
-    <style type="text/css">
-        html {
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-        }
-
-        body, table, input, textarea, select, button {
-            font-family: "微软雅黑",Verdana, sans-serif,"宋体";
-            font-size: 12px;
-        }
-
-        .yui3-skin-sam .yui3-datatable tr.myhilite td {
-            background-color: #C0ffc0;
-        }
-
-        #datatable_matchs tbody tr {
-            /*  Turn on cursor to show TR's are selectable on Master DataTable only  */
-            cursor: pointer;
-        }
-
-            /* Hide overlay markup while loading, if js is enabled */
-        .yui3-js-enabled .yui3-overlay-loading {
-            top: -1000em;
-            left: -1000em;
-            position: absolute;
-        }
-
-            /* Overlay Look/Feel */
-        .yui3-overlay-content {
-            background-color: #ECEFFB;
-            border: 1px solid #9EA8C6;
-            border-radius: 3px;
-            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.25);
-        }
-
-        .yui3-overlay-content .yui3-widget-hd {
-            background-color: #B6BFDA;
-            color: #30418C;
-            font-size: 120%;
-            font-weight: bold;
-            padding: 0.2em 0.5em 0.3em;
-            border-radius: 2px 2px 0 0;
-        }
-
-        .yui3-overlay-content .yui3-widget-bd {
-            padding: 0.4em 0.6em 0.5em;
-        }
-
-        .yui3-overlay-content .yui3-widget-ft {
-            background-color: #DFE3F5;
-            padding: 0.4em 0.6em 0.5em;
-            border-radius: 0 0 2px 2px;
-        }
-
-        .content table {
-            width: auto;
-            font-family: "微软雅黑", Verdana, sans-serif, "宋体";
-        }
-
-        .content caption {
-            display: table-caption;
-        }
-
-        .content th,
-        .content td {
-            border: 0 none;
-            text-transform: none;
-        }
-    </style>
+<meta charset="utf-8">
+<title>Odds Query Builder</title>
+<link rel="stylesheet" href="yui3/cssgrids/cssgrids-min.css">
+<link rel="stylesheet" href="yui3/cssbutton/cssbutton-min.css">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="vendor/prettify/prettify-min.css">
+<script src="yui3/yui/yui-min.js"></script>
+<style type="text/css">
+html {
+	-webkit-text-size-adjust: 100%;
+	-ms-text-size-adjust: 100%;
+}
+body, table, input, textarea, select, button {
+	font-family: "微软雅黑", Verdana, sans-serif, "宋体";
+	font-size: 12px;
+}
+.yui3-skin-sam .yui3-datatable tr.myhilite td {
+	background-color: #C0ffc0;
+}
+#datatable_matchs tbody tr {
+	/*  Turn on cursor to show TR's are selectable on Master DataTable only  */
+	cursor: pointer;
+}
+/* Hide overlay markup while loading, if js is enabled */
+.yui3-js-enabled .yui3-overlay-loading {
+	top: -1000em;
+	left: -1000em;
+	position: absolute;
+}
+/* Overlay Look/Feel */
+.yui3-overlay-content {
+	background-color: #ECEFFB;
+	border: 1px solid #9EA8C6;
+	border-radius: 3px;
+	box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.25);
+}
+.yui3-overlay-content .yui3-widget-hd {
+	background-color: #B6BFDA;
+	color: #30418C;
+	font-size: 120%;
+	font-weight: bold;
+	padding: 0.2em 0.5em 0.3em;
+	border-radius: 2px 2px 0 0;
+}
+.yui3-overlay-content .yui3-widget-bd {
+	padding: 0.4em 0.6em 0.5em;
+}
+.yui3-overlay-content .yui3-widget-ft {
+	background-color: #DFE3F5;
+	padding: 0.4em 0.6em 0.5em;
+	border-radius: 0 0 2px 2px;
+}
+.content table {
+	width: auto;
+	font-family: "微软雅黑", Verdana, sans-serif, "宋体";
+}
+.content caption {
+	display: table-caption;
+}
+.content th, .content td {
+	border: 0 none;
+	text-transform: none;
+}
+</style>
 </head>
 <body class="yui3-skin-sam">
 <div id="doc" style="margin-top: 15px;">
-    <div class="yui3-g">
-        <div class="yui3-u-1">
-            <div id="main">
-                <div class="content">
-                    <div id="tab_global">
-                        <ul>
-                            <li><a href="#workflow">选单流程</a></li>
-                            <li><a href="#single_betting_tab">单式投注</a></li>
-                            <li><a href="#history_query">历史查询</a></li>
-                        </ul>
-                        <div>
-                            <div id="workflow" style="padding: 10px;">
-                                <input id="btn_add_workflow" class='yui3-button' type="button" value="新增场次"/>
-
-                                <div id="workflow_datatable" style="margin-top: 10px;"></div>
-
-                            </div>
-                            <div id="single_betting_tab">
-                                <div>
-                                    注数:<input id="Orders_Number" type="text" value="32"/>
-                                    <input id="guess_match_results" type="text" style="width: 500px;"/>
-                                    <input id="btn_betting_test" class='yui3-button' type="button" value="测试"/>
-                                    <input id="btn_betting_generic" class='yui3-button' type="button" value="生成"/>
-                                </div>
-                                <div id="random_rate" style="margin-top: 5px;margin-bottom: 5px;">
-
-                                </div>
-                                <div class="yui3-g">
-                                    <div class="yui3-u-1-3" id="color_results"></div>
-                                <div class="yui3-u-1-3">
-                                 <div><textarea id="textarea_betting_result" rows="20"
-                                                                  cols="50"></textarea>
-                                    </div>
-                                 </div>
-                                <div class="yui3-u-1-3">
-                                    <div style="margin-top: 10px;">覆盖率:</div>
-                                    <div style="margin-top: 5px;" id="distributed_report" style="margin-top: 10px;">
-
-                                    </div>
-                                </div>
-                                    </div>
-                            </div>
-                            <div id="history_query">
-                                <div class="example yui3-skin-sam">
-                                    <div>(
-                                        实力: <select id="Detect_Result">
-                                            <option value="3">3</option>
-                                            <option value="1">1</option>
-                                            <option value="0">0</option>
-                                            <option value="31">31</option>
-                                            <option value="10">10</option>
-                                        </select>
-                                        赛果: <select id="match_result">
-                                            <option value="310">胜平负</option>
-                                            <option value="3">胜</option>
-                                            <option value="1">平</option>
-                                            <option value="0">负</option>
-                                        </select>
-                                        )~(
-                                        胜: <select id="diff_win">
-                                            <option value=""></option>
-                                            <option value="N">不变</option>
-                                            <option value="H">高</option>
-                                            <option value="L">低</option>
-                                        </select>
-                                        平: <select id="diff_draw">
-                                            <option value=""></option>
-                                            <option value="N">不变</option>
-                                            <option value="H">高</option>
-                                            <option value="L">低</option>
-                                        </select>
-                                        负: <select id="diff_lost">
-                                            <option value=""></option>
-                                            <option value="N">不变</option>
-                                            <option value="H">高</option>
-                                            <option value="L">低</option>
-                                        </select>
-                                        )-(
-                                        方向: <select id="odds_direction">
-                                            <option value="-1"></option>
-                                            <option value="3">主胜</option>
-                                            <option value="0">客胜</option>
-                                            <option value="1">均等</option>
-                                        </select>
-                                        胜负赔: <input type="text" id="odds_int_num"/>
-                                        )
-                                        <input id="btn_QueryHistoryMatchs" class='yui3-button' type="button" value="搜索"
+<div class="yui3-g">
+<div class="yui3-u-1">
+<div id="main">
+<div class="content">
+<div id="tab_global">
+<ul>
+  <li><a href="#workflow">选单流程</a></li>
+  <li><a href="#single_betting_tab">单式投注</a></li>
+  <li><a href="#history_query">历史查询</a></li>
+</ul>
+<div>
+<div id="workflow" style="padding: 10px;">
+  <input id="btn_add_workflow" class='yui3-button' type="button" value="新增场次"/>
+  <div id="workflow_datatable" style="margin-top: 10px;"></div>
+</div>
+<div id="single_betting_tab">
+  <div> 注数:
+    <input id="Orders_Number" type="text" value="32"/>
+    <input id="guess_match_results" type="text" style="width: 500px;"/>
+    <input id="btn_betting_test" class='yui3-button' type="button" value="测试"/>
+    <input id="btn_betting_generic" class='yui3-button' type="button" value="生成"/>
+  </div>
+  <div id="random_rate" style="margin-top: 5px;margin-bottom: 5px;"> </div>
+  <div class="yui3-g">
+    <div class="yui3-u-1-3" id="color_results"></div>
+    <div class="yui3-u-1-3">
+      <div>
+        <textarea id="textarea_betting_result" rows="20" cols="50"></textarea>
+      </div>
+    </div>
+    <div class="yui3-u-1-3">
+      <div style="margin-top: 10px;">覆盖率:</div>
+      <div id="distributed_report" style="margin-top: 10px;"></div>
+    </div>
+  </div>
+</div>
+<div id="history_query">
+<div class="example yui3-skin-sam">
+<div>(
+  实力:
+  <select id="Detect_Result">
+    <option value="3">3</option>
+    <option value="1">1</option>
+    <option value="0">0</option>
+    <option value="31">31</option>
+    <option value="10">10</option>
+  </select>
+  赛果:
+  <select id="match_result">
+    <option value="310">胜平负</option>
+    <option value="3">胜</option>
+    <option value="1">平</option>
+    <option value="0">负</option>
+  </select>
+  )~(
+  胜:
+  <select id="diff_win">
+    <option value=""></option>
+    <option value="N">不变</option>
+    <option value="H">高</option>
+    <option value="L">低</option>
+  </select>
+  平:
+  <select id="diff_draw">
+    <option value=""></option>
+    <option value="N">不变</option>
+    <option value="H">高</option>
+    <option value="L">低</option>
+  </select>
+  负:
+  <select id="diff_lost">
+    <option value=""></option>
+    <option value="N">不变</option>
+    <option value="H">高</option>
+    <option value="L">低</option>
+  </select>
+  )-(
+  方向:
+  <select id="odds_direction">
+    <option value="-1"></option>
+    <option value="3">主胜</option>
+    <option value="0">客胜</option>
+    <option value="1">均等</option>
+  </select>
+  胜负赔:
+  <input type="text" id="odds_int_num" style="width:100px"/>
+  )
+  <label for="event_name">赛事:</label>
+  <input type="text" id="event_name"  style="width:100px">
+  <input id="btn_QueryHistoryMatchs" class='yui3-button' type="button" value="搜索"
                                                style="margin-left: 10px;"/>
-                                    </div>
-                                    <div>*共过滤出<span id="records_total_tip" style="color: red;"></span>条记录,随机显示最多25条
-                                    </div>
-                                    <div id="datatable_matchs" style="margin-top: 10px;"></div>
-
-                                    <div id="overlay" class="yui3-overlay-loading">
-                                        <div class="yui3-widget-hd">球队概况及变赔</div>
-                                        <div class="yui3-widget-bd">Overlay Body</div>
-                                        <div class="yui3-widget-ft"></div>
-                                    </div>
-
-                                    <textarea id="overlay-content-template" style="display: none;">
+</div>
+<div>*共过滤出<span id="records_total_tip" style="color: red;"></span>条记录,随机显示最多25条 </div>
+<div id="datatable_matchs" style="margin-top: 10px;"></div>
+<div id="overlay" class="yui3-overlay-loading">
+  <div class="yui3-widget-hd">球队概况及变赔</div>
+  <div class="yui3-widget-bd">Overlay Body</div>
+  <div class="yui3-widget-ft"></div>
+</div>
+<textarea id="overlay-content-template" style="display: none;">
                                         <div style="border-bottom: 1px solid #ee8811;margin-top: 5px;">概况</div>
                                         <div style="margin-top: 5px; text-indent: 10px;">
                                             <div>近10场: <%= this.last_10%></div>
@@ -196,15 +184,6 @@
                                             <div>易博: <%== this.odds_ysb_c%></div>
                                         </div>
                                     </textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <script type="text/javascript">
 YUI(
         {gallery: 'gallery-2013.01.16-21-05'}
@@ -456,13 +435,14 @@ YUI(
                 var win = Y.one("#diff_win");
                 var draw = Y.one("#diff_draw");
                 var lost = Y.one("#diff_lost");
+                var input_event_name = Y.one("#event_name");
                 var odds_direction = Y.one("#odds_direction").get("value");
                 var odds_int_num = Y.one("#odds_int_num").get("value");
                 var flag = win.get("value") + draw.get("value") + lost.get("value");
                 var r = Detect_Result.get("value");
                 var match_result = Y.one("#match_result").get("value");
                 var query = "?d_result=" + r + "&flag=" + flag + "&odds_direction="
-                        + odds_direction + "&odds_int_num=" + odds_int_num + "&match_result=" + match_result;
+                        + odds_direction + "&odds_int_num=" + odds_int_num + "&match_result=" + match_result+"&event_name="+input_event_name.get("value");
                 grid.datasource.load({ request: query });
             });
 
@@ -534,8 +514,8 @@ YUI(
                 });
             });
         });
-</script>
-<script src="vendor/prettify/prettify-min.js"></script>
+</script> 
+<script src="vendor/prettify/prettify-min.js"></script> 
 <script>prettyPrint();</script>
 </body>
 </html>

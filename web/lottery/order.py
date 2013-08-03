@@ -23,6 +23,18 @@ def parse():
             ds.append(row)
     return ds
 
+def compare_two(a,b):
+    size = len(a)
+    if size != len(b):
+        return -1
+    a_arr = [s for s in a]
+    b_arr = [s for s in b]
+    count = 0
+    for i in range(size):
+        if a_arr[i] != b_arr[i]:
+            count += 1
+    return count
+
 def analysis(limit = 32):
     import random,os
     from difflib import SequenceMatcher
@@ -52,11 +64,13 @@ def analysis(limit = 32):
 
     results = []
     for item in ds:
-        tmp = item[0][0]*item[2][0] + item[0][1]*item[2][1]
+        tmp = item[0][0]*item[2][0]
+        if len(item[0]) == 2:
+            tmp = item[0][0]*item[2][0] + item[0][1]*item[2][1]
         if len(item[0]) == 3:
             tmp = item[0][0]*item[2][0] + item[0][1]*item[2][1] + item[0][2]*item[2][2]
         tmp = [s for s in tmp]
-        for i in range(2):
+        for i in range(1):
             random.shuffle(tmp)
         results.append(tmp)
 
@@ -78,8 +92,13 @@ def analysis(limit = 32):
 
     for k in match_rate.keys():
         print("----------------------------------------")
-        print("%.2f:" % k)
-        print(match_rate[k])
+        print("阀值: %.2f:" % k)
+        print("组合:",match_rate[k])
+        diff_nums = list()
+        for match in match_rate[k]:
+            num = compare_two(first,match)
+            diff_nums.append(num)
+        print("差异:",diff_nums)
         print("----------------------------------------")
     #write to file.
     results_text.insert(0,first)
@@ -91,5 +110,5 @@ def analysis(limit = 32):
         f.write(line+",\n")
     f.close()
 
-analysis(limit=32)
+analysis(limit=16)
 

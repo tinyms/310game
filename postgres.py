@@ -6,7 +6,7 @@ import psycopg2.extras
 
 
 def pg_open():
-    return psycopg2.connect(database="tinyms", user="postgres", password="1")
+    return psycopg2.connect(database="postgres", user="postgres", password="1")
 
 
 def to_floats(odds_text):
@@ -67,9 +67,11 @@ def wl_lb_match_history_cache(matchs):
         cnn.close()
 
 
-def query_history_matchs(d_result, flag, match_result, odds_direction, odds_int_num):
+def query_history_matchs(d_result, flag, match_result, odds_direction, odds_int_num,event_name=""):
     #odds_direction
     where_extra = " detect_result = '%s' " % d_result
+    if event_name:
+        where_extra += " AND evt_name like '%"+event_name+"%' "
     if match_result != "310":
         where_extra += " AND actual_result = %s " % match_result
 
